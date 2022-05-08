@@ -20,7 +20,7 @@
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
 // Shared Variable
-const int WINDOW_SIZE = getwinsize();
+const byte WINDOW_SIZE = getwinsize();
 // A variables
 float TIMEOUT = 20.0;
 int send_base;
