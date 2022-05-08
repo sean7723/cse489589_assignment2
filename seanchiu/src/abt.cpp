@@ -48,7 +48,36 @@ void A_output(struct msg message)
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
-
+  // Verify checksum
+  int checksum = packet.seqnum + packet.acknum + atoi(packet.payload);
+  if(checksum == packet.checksum) {
+    // Checksum OK proceed
+     if(in_transit->seqnum == packet.acknum) {
+       stoptimer(0);
+       // This is the ack we were waiting for
+       if(buffer.size > 0) {
+         // Still messages in buffer that needs to be sent
+         struct msg next_msg = buffer.front();
+         struct pkt next_packet;
+         next_packet.seqnum = next_seq;
+         next_packet.acknum = 0;
+         strncpy(next_msg.data, next_packet.payload, 20);
+         buffer.pop();
+         next_packet.checksum = next_packet.seqnum + next_packet.acknum + atoi(next_packet.payload);
+         tolayer3(0, next_packet);
+         in_transit = &next_packet;
+         starttimer(0, TIMEOUT);
+         if(next_seq == 0) {
+           next_seq = 1;
+         } else {
+           next_seq = 0;
+         }
+       } else {
+         // No more messages in buffer
+         in_transit = NULL;
+       }
+     }
+  }
 }
 
 /* called when A's timer goes off */
