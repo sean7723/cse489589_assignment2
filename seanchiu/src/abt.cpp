@@ -19,6 +19,7 @@
 **********************************************************************/
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
+float TIMEOUT = 10.0;
 int next_seq;
 std::queue<msg> buffer;
 struct pkt* in_transit;
@@ -35,8 +36,12 @@ void A_output(struct msg message)
     to_send.acknum = 0;
     strncpy(message.data, to_send.payload, 20);
     // calculate checksum for pkt
-    int payload_converted = atoi(to_send.payload);
-    to_send.checksum = to_send.seqnum + to_send.acknum + payload_converted;
+    to_send.checksum = to_send.seqnum + to_send.acknum + atoi(to_send.payload);
+    // store packet in case need to resend, and then send packet.
+    in_transit = &to_send;
+    tolayer3(0, to_send);
+    // start timer for packet
+    starttimer(0, TIMEOUT);
   }
 }
 
