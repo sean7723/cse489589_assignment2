@@ -3,7 +3,7 @@
 /* ******************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
 
-   This code should be used for PA2, unidirectional data transfer 
+   This code should be used for PA2, unidirectional data transfer
    protocols (from A to B). Network properties:
    - one way network delay averages five time units (longer if there
      are other messages in the channel for GBN), but can be larger
@@ -14,11 +14,18 @@
 **********************************************************************/
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
-
+bool in_transit;
+int last_seq;
+queue<struct msg> buffer;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
+  if(in_transit) {
+    // If already waiting for message, add to buffer
 
+  } else {
+    // If not waiting for message, we can just send it
+  }
 }
 
 /* called from layer 3, when a packet arrives for layer 4 */
@@ -31,13 +38,14 @@ void A_input(struct pkt packet)
 void A_timerinterrupt()
 {
 
-}  
+}
 
 /* the following routine will be called once (only) before any other */
 /* entity A routines are called. You can use it to do any initialization */
 void A_init()
 {
-
+  in_transit = false;
+  next_seq = 0;
 }
 
 /* Note that with simplex transfer from a-to-B, there is no B_output() */
