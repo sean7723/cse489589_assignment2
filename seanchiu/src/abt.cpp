@@ -33,8 +33,7 @@ void A_output(struct msg message)
     to_send.acknum = 0;
     strncpy(message.data, to_send.payload, 20);
     // calculate checksum for pkt
-    int payload_converted = std::strtol(to_send.payload, nullptr, 10);
-    to_send.checksum = to_send.seqnum + to_send.acknum + payload_converted;
+    to_send.checksum = to_send.seqnum + to_send.acknum + to_send.payload;
   }
 }
 
