@@ -111,7 +111,7 @@ void B_input(struct pkt packet)
     ack.seqnum = packet.seqnum;
     ack.acknum = packet.seqnum;
     for(int i = 0; i < 20; i++) {
-      ack.payload[i] = packet.data[i];
+      ack.payload[i] = packet.payload[i];
     }
     ack.checksum = ack.seqnum + ack.acknum + atoi(ack.payload);
     tolayer3(1, ack);
