@@ -14,17 +14,19 @@
 **********************************************************************/
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
-bool in_transit;
 int next_seq;
 std::queue<msg> buffer;
+struct pkt* in_transit;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
-  if(in_transit) {
+  if(in_transit != nullptr) {
     // If already waiting for message, add to buffer
-
+    buffer.push(message);
   } else {
     // If not waiting for message, we can just send it
+    struct pkt to_send;
+
   }
 }
 
@@ -44,7 +46,6 @@ void A_timerinterrupt()
 /* entity A routines are called. You can use it to do any initialization */
 void A_init()
 {
-  in_transit = false;
   next_seq = 0;
 }
 
