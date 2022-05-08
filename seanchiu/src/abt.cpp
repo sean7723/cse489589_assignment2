@@ -74,7 +74,7 @@ void A_input(struct pkt packet)
        // printf("Correct ack\n");
        stoptimer(0);
        // This is the ack we were waiting for
-       printf("Queue size : %d\n", buffer.size());
+       // printf("Queue size : %d\n", buffer.size());
        if(buffer.size() > 0) {
          // printf("Sending next message\n");
          // Still messages in buffer that needs to be sent
@@ -133,7 +133,7 @@ void B_input(struct pkt packet)
   }
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
-    printf("Expected Seq Num : %d, Packet Seq Num : %d\n", expected_seq_num, packet.seqnum);
+    // printf("Expected Seq Num : %d, Packet Seq Num : %d\n", expected_seq_num, packet.seqnum);
     if(packet.seqnum != expected_seq_num) {
       struct pkt ack;
       ack.seqnum = packet.seqnum;
