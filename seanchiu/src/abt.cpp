@@ -2,6 +2,7 @@
 #include <queue>
 #include <string.h>
 #include <stdio.h>
+#include <iostream>
 /* ******************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
 
@@ -32,10 +33,7 @@ void A_output(struct msg message)
     to_send.acknum = 0;
     strncpy(message.data, to_send.payload, 20);
     // calculate checksum for pkt
-    int payload_converted = 0;
-    for(char a : to_send.payload) {
-      payload_converted += (int)a;
-    }
+    int payload_converted = std::strtol(to_send.payload, nullptr, 10);
     to_send.checksum = to_send.seqnum + to_send.acknum + payload_converted;
   }
 }
