@@ -103,7 +103,8 @@ void A_input(struct pkt packet)
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
-
+  tolayer3(0, *in_transit);
+  starttimer(0, TIMEOUT);
 }
 
 /* the following routine will be called once (only) before any other */
