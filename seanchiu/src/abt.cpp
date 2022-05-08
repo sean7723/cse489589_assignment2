@@ -90,6 +90,7 @@ void A_input(struct pkt packet)
          }
        } else {
          // No more messages in buffer
+         printf("Nothing in buffer! \n");
          in_transit = NULL;
        }
      }
