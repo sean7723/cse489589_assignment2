@@ -46,7 +46,7 @@ void A_output(struct msg message)
     // printf("%d\n", in_transit->seqnum);
     tolayer3(0, *to_send);
     // start timer for packet
-    starttimer(0, TIMEOUT);
+    //starttimer(0, TIMEOUT);
   }
 }
 
@@ -84,7 +84,7 @@ void A_input(struct pkt packet)
          tolayer3(0, *next_packet);
          free(in_transit);
          in_transit = next_packet;
-         starttimer(0, TIMEOUT);
+         //starttimer(0, TIMEOUT);
          if(next_seq == 0) {
            next_seq = 1;
          } else {
