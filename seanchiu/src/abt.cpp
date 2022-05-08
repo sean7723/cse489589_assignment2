@@ -35,7 +35,6 @@ void A_output(struct msg message)
     struct pkt to_send;
     to_send.seqnum = next_seq;
     to_send.acknum = 0;
-    printf("%d\n", next_seq);
     for(int i = 0; i < 20; i++) {
       to_send.payload[i] = message.data[i];
       payload_checksum += (int)message.data[i];
@@ -44,6 +43,7 @@ void A_output(struct msg message)
     to_send.checksum = to_send.seqnum + to_send.acknum + payload_checksum;
     // store packet in case need to resend, and then send packet.
     in_transit = &to_send;
+    printf("%d\n", in_transit->seqnum);
     tolayer3(0, to_send);
     // start timer for packet
     starttimer(0, TIMEOUT);
