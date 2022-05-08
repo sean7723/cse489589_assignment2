@@ -62,9 +62,7 @@ void A_input(struct pkt packet)
   if(checksum == packet.checksum) {
     printf("Checksum OK\n");
     // Checksum OK proceed
-    printf(in_transit->seqnum);
-    printf("\n");
-    printf(packet.acknum);
+    printf("Expected ack num : %d, Actual ack num : %d\n", in_transit->seqnum, packet.acknum);
      if(in_transit->seqnum == packet.acknum) {
        printf("Correct ack\n");
        stoptimer(0);
