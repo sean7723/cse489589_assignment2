@@ -40,11 +40,11 @@ void A_output(struct msg message)
       payload_checksum += (int)message.data[i];
     }
     // calculate checksum for pkt
-    to_send->checksum = to_send.seqnum + to_send.acknum + payload_checksum;
+    to_send->checksum = to_send->seqnum + to_send->acknum + payload_checksum;
     // store packet in case need to resend, and then send packet.
     in_transit = to_send;
     printf("%d\n", in_transit->seqnum);
-    tolayer3(0, to_send);
+    tolayer3(0, *to_send);
     // start timer for packet
     starttimer(0, TIMEOUT);
   }
@@ -81,8 +81,8 @@ void A_input(struct pkt packet)
            payload_checksum += next_msg.data[i];
          }
          buffer.pop();
-         next_packet->checksum = next_packet.seqnum + next_packet.acknum + payload_checksum;
-         tolayer3(0, next_packet);
+         next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
+         tolayer3(0, *next_packet);
          free(in_transit);
          in_transit = next_packet;
          starttimer(0, TIMEOUT);
