@@ -33,10 +33,7 @@ void A_output(struct msg message)
     to_send.acknum = 0;
     strncpy(message.data, to_send.payload, 20);
     // calculate checksum for pkt
-    int payload_converted = 0;
-    for(char & a : to_send.payload) {
-      payload_converted += (int)a;
-    }
+    int payload_converted = atoi(to_send.payload);
     to_send.checksum = to_send.seqnum + to_send.acknum + payload_converted;
   }
 }
