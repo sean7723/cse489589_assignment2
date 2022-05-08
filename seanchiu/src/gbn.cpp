@@ -20,12 +20,12 @@
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
 // Shared Variable
-const byte WINDOW_SIZE = getwinsize();
+const int WINDOW_SIZE = getwinsize();
 // A variables
 float TIMEOUT = 20.0;
 int send_base;
 int next_seq_num;
-struct pkt in_transit[WINDOW_SIZE];
+struct pkt* in_transit = new struct pkt[WINDOW_SIZE];
 // B variables
 
 /* called from layer 5, passed the data to be sent to other side */
