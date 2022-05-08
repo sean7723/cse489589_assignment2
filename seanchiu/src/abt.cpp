@@ -19,7 +19,7 @@
 **********************************************************************/
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
-float TIMEOUT = 20.0;
+float TIMEOUT = 10.0;
 int next_seq;
 int expected_seq_num;
 std::queue<msg> buffer;
