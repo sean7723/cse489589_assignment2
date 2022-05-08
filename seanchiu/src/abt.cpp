@@ -54,6 +54,7 @@ void A_input(struct pkt packet)
   printf("Received Ack");
   int checksum = packet.seqnum + packet.acknum + atoi(packet.payload);
   if(checksum == packet.checksum) {
+    printf("Checksum OK");
     // Checksum OK proceed
      if(in_transit->seqnum == packet.acknum) {
        stoptimer(0);
