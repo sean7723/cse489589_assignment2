@@ -80,7 +80,6 @@ void A_input(struct pkt packet)
            next_packet->payload[i] = next_msg.data[i];
            payload_checksum += next_msg.data[i];
          }
-         buffer.pop();
          next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
          tolayer3(0, *next_packet);
          free(in_transit);
@@ -91,6 +90,7 @@ void A_input(struct pkt packet)
          } else {
            next_seq = 0;
          }
+         buffer.pop();
        } else {
          // No more messages in buffer
          // printf("Nothing in buffer! \n");
