@@ -69,7 +69,18 @@ void A_init()
 /* called from layer 3, when a packet arrives for layer 4 at B*/
 void B_input(struct pkt packet)
 {
-
+  // Verify checksum
+  int checksum = packet.seqnum + packet.acknum + atoi(packet.payload);
+  if(checksum == packet.checksum) {
+    // Checksum OK proceed
+    tolayer5(1, packet.payload);
+    struct pkt ack;
+    ack.seqnum = packet.seqnum;
+    ack.acknum = packet.seqnum;
+    strncpy(packet.payload, ack.payload, 20);
+    ack.checksum = ack.seqnum + ack.acknum + atoi(ack.payload);
+    tolayer3(1, ack);
+  }
 }
 
 /* the following rouytine will be called once (only) before any other */
