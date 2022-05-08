@@ -33,16 +33,16 @@ void A_output(struct msg message)
     // If not waiting for message, we can just send it
     int payload_checksum = 0;
     struct pkt* to_send = (struct pkt*)malloc(sizeof(struct pkt));
-    to_send.seqnum = next_seq;
-    to_send.acknum = 0;
+    to_send->seqnum = next_seq;
+    to_send->acknum = 0;
     for(int i = 0; i < 20; i++) {
-      to_send.payload[i] = message.data[i];
+      to_send->payload[i] = message.data[i];
       payload_checksum += (int)message.data[i];
     }
     // calculate checksum for pkt
-    to_send.checksum = to_send.seqnum + to_send.acknum + payload_checksum;
+    to_send->checksum = to_send.seqnum + to_send.acknum + payload_checksum;
     // store packet in case need to resend, and then send packet.
-    in_transit = &to_send;
+    in_transit = to_send;
     printf("%d\n", in_transit->seqnum);
     tolayer3(0, to_send);
     // start timer for packet
@@ -72,18 +72,19 @@ void A_input(struct pkt packet)
          printf("Sending next message\n");
          // Still messages in buffer that needs to be sent
          struct msg next_msg = buffer.front();
-         struct pkt next_packet;
-         next_packet.seqnum = next_seq;
-         next_packet.acknum = 0;
+         struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
+         next_packet->seqnum = next_seq;
+         next_packet->acknum = 0;
          int payload_checksum = 0;
          for(int i = 0; i < 20; i++) {
-           next_packet.payload[i] = next_msg.data[i];
+           next_packet->payload[i] = next_msg.data[i];
            payload_checksum += next_msg.data[i];
          }
          buffer.pop();
-         next_packet.checksum = next_packet.seqnum + next_packet.acknum + payload_checksum;
+         next_packet->checksum = next_packet.seqnum + next_packet.acknum + payload_checksum;
          tolayer3(0, next_packet);
-         in_transit = &next_packet;
+         free(in_transit);
+         in_transit = next_packet;
          starttimer(0, TIMEOUT);
          if(next_seq == 0) {
            next_seq = 1;
