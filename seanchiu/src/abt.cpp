@@ -48,6 +48,11 @@ void A_output(struct msg message)
     tolayer3(0, *to_send);
     // start timer for packet
     starttimer(0, TIMEOUT);
+    if(next_seq == 0) {
+      next_seq = 1;
+    } else {
+      next_seq = 0;
+    }
   }
 }
 
