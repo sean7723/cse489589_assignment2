@@ -22,11 +22,11 @@
 float TIMEOUT = 10.0;
 int next_seq;
 std::queue<msg> buffer;
-struct pkt* in_transit = nullptr;
+struct pkt* in_transit = NULL;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
-  if(in_transit != nullptr) {
+  if(in_transit != NULL) {
     // If already waiting for message, add to buffer
     buffer.push(message);
   } else {
@@ -94,7 +94,7 @@ void A_input(struct pkt packet)
        } else {
          // No more messages in buffer
          // printf("Nothing in buffer! \n");
-         in_transit = nullptr;
+         in_transit = NULL;
        }
      }
   }
