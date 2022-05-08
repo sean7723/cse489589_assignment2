@@ -1,7 +1,7 @@
 #include "../include/simulator.h"
 #include <queue>
-#include <string>
-#include <iostream>
+#include <string.h>
+#include <stdio.h>
 /* ******************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
 
