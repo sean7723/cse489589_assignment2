@@ -1,9 +1,14 @@
 #include "../include/simulator.h"
-
+#include <queue>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <iostream>
 /* ******************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
 
-   This code should be used for PA2, unidirectional data transfer 
+   This code should be used for PA2, unidirectional data transfer
    protocols (from A to B). Network properties:
    - one way network delay averages five time units (longer if there
      are other messages in the channel for GBN), but can be larger
@@ -14,6 +19,14 @@
 **********************************************************************/
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
+// Shared Variable
+int window_size;
+// A variables
+float TIMEOUT = 20.0;
+int send_base;
+int next_seq_num;
+struct pkt [window_size];
+// B variables
 
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
@@ -31,13 +44,15 @@ void A_input(struct pkt packet)
 void A_timerinterrupt()
 {
 
-}  
+}
 
 /* the following routine will be called once (only) before any other */
 /* entity A routines are called. You can use it to do any initialization */
 void A_init()
 {
-
+  window_size = getwinsize();
+  next_seq_num = 0;
+  send_base = 0;
 }
 
 /* Note that with simplex transfer from a-to-B, there is no B_output() */

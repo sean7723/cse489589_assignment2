@@ -19,11 +19,13 @@
 **********************************************************************/
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
+// A variables
 float TIMEOUT = 20.0;
 int next_seq;
-int expected_seq_num;
 std::queue<msg> buffer;
 struct pkt* in_transit = NULL;
+// B variables
+int expected_seq_num;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
