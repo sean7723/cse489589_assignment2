@@ -20,7 +20,7 @@
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
 float TIMEOUT = 10.0;
-int next_seq;
+int next_seq = 0;
 std::queue<msg> buffer;
 struct pkt* in_transit;
 /* called from layer 5, passed the data to be sent to other side */
