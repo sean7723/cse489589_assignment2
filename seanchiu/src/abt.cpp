@@ -37,7 +37,7 @@ void A_output(struct msg message)
     to_send.acknum = 0;
     for(int i = 0; i < 20; i++) {
       to_send.payload[i] = message.data[i];
-      payload_checksum += message.data[i]
+      payload_checksum += message.data[i];
     }
     // calculate checksum for pkt
     to_send.checksum = to_send.seqnum + to_send.acknum + payload_checksum;
@@ -56,7 +56,7 @@ void A_input(struct pkt packet)
   printf("Received Ack");
   int packet_payload_checksum = 0;
   for(int i = 0; i < 20; i++) {
-    packet_checksum += packet.payload[i];
+    packet_payload_checksum += packet.payload[i];
   }
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
