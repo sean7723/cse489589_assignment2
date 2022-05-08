@@ -21,6 +21,7 @@
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
 float TIMEOUT = 20.0;
 int next_seq;
+int expected_seq_num;
 std::queue<msg> buffer;
 struct pkt* in_transit = NULL;
 /* called from layer 5, passed the data to be sent to other side */
@@ -127,18 +128,36 @@ void B_input(struct pkt packet)
   }
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
-    // Checksum OK proceed
-    tolayer5(1, packet.payload);
-    struct pkt ack;
-    ack.seqnum = packet.seqnum;
-    ack.acknum = packet.seqnum;
-    int payload_checksum = 0;
-    for(int i = 0; i < 20; i++) {
-      ack.payload[i] = packet.payload[i];
-      payload_checksum += packet.payload[i];
+    if(packet.seqnum != expected_seq_num) {
+      struct pkt ack;
+      ack.seqnum = packet.seqnum;
+      ack.acknum = packet.seqnum;
+      int payload_checksum = 0;
+      for(int i = 0; i < 20; i++) {
+        ack.payload[i] = packet.payload[i];
+        payload_checksum += packet.payload[i];
+      }
+      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+      tolayer3(1, ack);
+    } else {
+      // Checksum OK proceed
+      tolayer5(1, packet.payload);
+      struct pkt ack;
+      ack.seqnum = packet.seqnum;
+      ack.acknum = packet.seqnum;
+      int payload_checksum = 0;
+      for(int i = 0; i < 20; i++) {
+        ack.payload[i] = packet.payload[i];
+        payload_checksum += packet.payload[i];
+      }
+      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+      tolayer3(1, ack);
+      if(expected_seq_num == 0) {
+        expected_seq_num = 1;
+      } else {
+        expected_seq_num = 0;
+      }
     }
-    ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
-    tolayer3(1, ack);
   }
 }
 
@@ -146,5 +165,5 @@ void B_input(struct pkt packet)
 /* entity B routines are called. You can use it to do any initialization */
 void B_init()
 {
-
+  expected_seq_num = 0;
 }
