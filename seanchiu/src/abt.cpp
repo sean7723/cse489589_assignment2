@@ -61,7 +61,7 @@ void A_input(struct pkt packet)
          struct pkt next_packet;
          next_packet.seqnum = next_seq;
          next_packet.acknum = 0;
-         memcpy(message.data, to_send.payload, sizeof(message.data));
+         memcpy(next_msg.data, next_packet.payload, sizeof(message.data));
          buffer.pop();
          next_packet.checksum = next_packet.seqnum + next_packet.acknum + atoi(next_packet.payload);
          tolayer3(0, next_packet);
