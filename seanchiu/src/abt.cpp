@@ -34,7 +34,7 @@ void A_output(struct msg message)
     struct pkt to_send;
     to_send.seqnum = next_seq;
     to_send.acknum = 0;
-    strncpy(message.data, to_send.payload, 20);
+    memcpy(message.data, to_send.payload, sizeof(message.data));
     // calculate checksum for pkt
     to_send.checksum = to_send.seqnum + to_send.acknum + atoi(to_send.payload);
     // store packet in case need to resend, and then send packet.
@@ -61,7 +61,7 @@ void A_input(struct pkt packet)
          struct pkt next_packet;
          next_packet.seqnum = next_seq;
          next_packet.acknum = 0;
-         strncpy(next_msg.data, next_packet.payload, 20);
+         memcpy(message.data, to_send.payload, sizeof(message.data));
          buffer.pop();
          next_packet.checksum = next_packet.seqnum + next_packet.acknum + atoi(next_packet.payload);
          tolayer3(0, next_packet);
@@ -106,7 +106,7 @@ void B_input(struct pkt packet)
     struct pkt ack;
     ack.seqnum = packet.seqnum;
     ack.acknum = packet.seqnum;
-    strncpy(packet.payload, ack.payload, 20);
+    memcpy(packet.payload, ack.payload, 20);
     ack.checksum = ack.seqnum + ack.acknum + atoi(ack.payload);
     tolayer3(1, ack);
   }
