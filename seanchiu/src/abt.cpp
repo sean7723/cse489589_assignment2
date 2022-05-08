@@ -32,7 +32,7 @@ void A_output(struct msg message)
   } else {
     // If not waiting for message, we can just send it
     int payload_checksum = 0;
-    struct pkt to_send;
+    struct pkt* to_send = (struct pkt*)malloc(sizeof(struct pkt));
     to_send.seqnum = next_seq;
     to_send.acknum = 0;
     for(int i = 0; i < 20; i++) {
