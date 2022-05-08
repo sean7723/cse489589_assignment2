@@ -63,9 +63,11 @@ void A_input(struct pkt packet)
     printf("Checksum OK\n");
     // Checksum OK proceed
      if(in_transit->seqnum == packet.acknum) {
+       printf("Correct ack\n");
        stoptimer(0);
        // This is the ack we were waiting for
        if(buffer.size() > 0) {
+         printf("Sending next message\n");
          // Still messages in buffer that needs to be sent
          struct msg next_msg = buffer.front();
          struct pkt next_packet;
