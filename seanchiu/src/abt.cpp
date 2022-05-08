@@ -19,7 +19,7 @@
 **********************************************************************/
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
-float TIMEOUT = 10.0;
+float TIMEOUT = 20.0;
 int next_seq;
 std::queue<msg> buffer;
 struct pkt* in_transit = NULL;
