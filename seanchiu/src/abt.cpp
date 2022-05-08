@@ -1,5 +1,4 @@
 #include "../include/simulator.h"
-#include <queue>
 
 /* ******************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
@@ -17,7 +16,7 @@
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
 bool in_transit;
 int next_seq;
-queue<msg> buffer;
+std::queue<msg> buffer;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
