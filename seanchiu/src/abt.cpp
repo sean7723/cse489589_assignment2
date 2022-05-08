@@ -29,7 +29,7 @@ void A_output(struct msg message)
     struct pkt to_send;
     to_send.seqnum = next_seq;
     to_send.acknum = 0;
-    to_send.payload = message.data;
+    strncpy(message.data, to_send.payload, 20);
     // calculate checksum for pkt
     to_send.checksum = to_send.seqnum + to_send.acknum + std::strtol(to_send.payload, NULL, 10);
   }
