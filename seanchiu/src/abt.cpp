@@ -43,7 +43,7 @@ void A_output(struct msg message)
     to_send->checksum = to_send->seqnum + to_send->acknum + payload_checksum;
     // store packet in case need to resend, and then send packet.
     in_transit = to_send;
-    printf("%d\n", in_transit->seqnum);
+    // printf("%d\n", in_transit->seqnum);
     tolayer3(0, *to_send);
     // start timer for packet
     starttimer(0, TIMEOUT);
@@ -54,22 +54,22 @@ void A_output(struct msg message)
 void A_input(struct pkt packet)
 {
   // Verify checksum
-  printf("Received Ack\n");
+  // printf("Received Ack\n");
   int packet_payload_checksum = 0;
   for(int i = 0; i < 20; i++) {
     packet_payload_checksum += (int)packet.payload[i];
   }
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
-    printf("Checksum OK\n");
+    // printf("Checksum OK\n");
     // Checksum OK proceed
-    printf("Expected ack num : %d, Actual ack num : %d\n", in_transit->seqnum, packet.acknum);
+    // printf("Expected ack num : %d, Actual ack num : %d\n", in_transit->seqnum, packet.acknum);
      if(in_transit->seqnum == packet.acknum) {
-       printf("Correct ack\n");
+       // printf("Correct ack\n");
        stoptimer(0);
        // This is the ack we were waiting for
        if(buffer.size() > 0) {
-         printf("Sending next message\n");
+         // printf("Sending next message\n");
          // Still messages in buffer that needs to be sent
          struct msg next_msg = buffer.front();
          struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
@@ -93,7 +93,7 @@ void A_input(struct pkt packet)
          }
        } else {
          // No more messages in buffer
-         printf("Nothing in buffer! \n");
+         // printf("Nothing in buffer! \n");
          in_transit = NULL;
        }
      }
