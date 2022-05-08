@@ -31,14 +31,16 @@ void A_output(struct msg message)
     buffer.push(message);
   } else {
     // If not waiting for message, we can just send it
+    int payload_checksum = 0;
     struct pkt to_send;
     to_send.seqnum = next_seq;
     to_send.acknum = 0;
     for(int i = 0; i < 20; i++) {
       to_send.payload[i] = message.data[i];
+      payload_checksum += message.data[i]
     }
     // calculate checksum for pkt
-    to_send.checksum = to_send.seqnum + to_send.acknum + atoi(to_send.payload);
+    to_send.checksum = to_send.seqnum + to_send.acknum + payload_checksum;
     // store packet in case need to resend, and then send packet.
     in_transit = &to_send;
     tolayer3(0, to_send);
@@ -52,7 +54,11 @@ void A_input(struct pkt packet)
 {
   // Verify checksum
   printf("Received Ack");
-  int checksum = packet.seqnum + packet.acknum + atoi(packet.payload);
+  int packet_payload_checksum = 0;
+  for(int i = 0; i < 20; i++) {
+    packet_checksum += packet.payload[i];
+  }
+  int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
     printf("Checksum OK");
     // Checksum OK proceed
@@ -65,11 +71,13 @@ void A_input(struct pkt packet)
          struct pkt next_packet;
          next_packet.seqnum = next_seq;
          next_packet.acknum = 0;
+         int payload_checksum = 0;
          for(int i = 0; i < 20; i++) {
            next_packet.payload[i] = next_msg.data[i];
+           payload_checksum += next_msg.data[i];
          }
          buffer.pop();
-         next_packet.checksum = next_packet.seqnum + next_packet.acknum + atoi(next_packet.payload);
+         next_packet.checksum = next_packet.seqnum + next_packet.acknum + payload_checksum;
          tolayer3(0, next_packet);
          in_transit = &next_packet;
          starttimer(0, TIMEOUT);
@@ -112,10 +120,12 @@ void B_input(struct pkt packet)
     struct pkt ack;
     ack.seqnum = packet.seqnum;
     ack.acknum = packet.seqnum;
+    int payload_checksum = 0;
     for(int i = 0; i < 20; i++) {
       ack.payload[i] = packet.payload[i];
+      payload_checksum += packet.payload[i];
     }
-    ack.checksum = ack.seqnum + ack.acknum + atoi(ack.payload);
+    ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
     tolayer3(1, ack);
   }
 }
