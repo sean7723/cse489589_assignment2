@@ -26,7 +26,11 @@ void A_output(struct msg message)
   } else {
     // If not waiting for message, we can just send it
     struct pkt to_send;
-
+    to_send.seqnum = next_seq;
+    to_send.acknum = 0;
+    to_send.payload = message.data;
+    // calculate checksum for pkt
+    to_send.checksum = to_send.seqnum + to_send.acknum + std::strtol(to_send.payload);
   }
 }
 
