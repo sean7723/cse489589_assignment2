@@ -20,7 +20,7 @@
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
 float TIMEOUT = 10.0;
-int next_seq = 0;
+int next_seq;
 std::queue<msg> buffer;
 struct pkt* in_transit;
 /* called from layer 5, passed the data to be sent to other side */
@@ -35,6 +35,7 @@ void A_output(struct msg message)
     struct pkt to_send;
     to_send.seqnum = next_seq;
     to_send.acknum = 0;
+    printf("%d\n", next_seq);
     for(int i = 0; i < 20; i++) {
       to_send.payload[i] = message.data[i];
       payload_checksum += (int)message.data[i];
