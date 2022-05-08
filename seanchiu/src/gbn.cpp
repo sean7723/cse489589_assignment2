@@ -25,7 +25,7 @@ const int WINDOW_SIZE = getwinsize();
 float TIMEOUT = 20.0;
 int send_base;
 int next_seq_num;
-struct pkt in_transit[window_size];
+struct pkt in_transit[WINDOW_SIZE];
 // B variables
 
 /* called from layer 5, passed the data to be sent to other side */
