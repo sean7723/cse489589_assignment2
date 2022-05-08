@@ -128,6 +128,7 @@ void B_input(struct pkt packet)
   }
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
+    printf("Expected Seq Num : %d, Packed Seq Num : %d", expected_seq_num, packet.seqnum);
     if(packet.seqnum != expected_seq_num) {
       struct pkt ack;
       ack.seqnum = packet.seqnum;
