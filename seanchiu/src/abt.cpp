@@ -55,7 +55,7 @@ void A_input(struct pkt packet)
      if(in_transit->seqnum == packet.acknum) {
        stoptimer(0);
        // This is the ack we were waiting for
-       if(buffer.size > 0) {
+       if(buffer.size() > 0) {
          // Still messages in buffer that needs to be sent
          struct msg next_msg = buffer.front();
          struct pkt next_packet;
