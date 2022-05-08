@@ -68,6 +68,7 @@ void A_input(struct pkt packet)
        // printf("Correct ack\n");
        stoptimer(0);
        // This is the ack we were waiting for
+       printf("Queue size : %d", buffer.size());
        if(buffer.size() > 0) {
          // printf("Sending next message\n");
          // Still messages in buffer that needs to be sent
