@@ -47,7 +47,7 @@ void A_output(struct msg message)
     // printf("%d\n", in_transit->seqnum);
     tolayer3(0, *to_send);
     // start timer for packet
-    starttimer(0, TIMEOUT);
+    starttimer(0, 10.0);
     if(next_seq == 0) {
       next_seq = 1;
     } else {
@@ -91,7 +91,7 @@ void A_input(struct pkt packet)
          tolayer3(0, *next_packet);
          free(in_transit);
          in_transit = next_packet;
-         starttimer(0, TIMEOUT);
+         starttimer(0, 10.0);
          if(next_seq == 0) {
            next_seq = 1;
          } else {
@@ -111,7 +111,7 @@ void A_input(struct pkt packet)
 void A_timerinterrupt()
 {
   tolayer3(0, *in_transit);
-  starttimer(0, TIMEOUT);
+  starttimer(0, 10.0);
 }
 
 /* the following routine will be called once (only) before any other */
