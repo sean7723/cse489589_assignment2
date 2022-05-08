@@ -53,14 +53,14 @@ void A_output(struct msg message)
 void A_input(struct pkt packet)
 {
   // Verify checksum
-  printf("Received Ack");
+  printf("Received Ack\n");
   int packet_payload_checksum = 0;
   for(int i = 0; i < 20; i++) {
     packet_payload_checksum += (int)packet.payload[i];
   }
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
-    printf("Checksum OK");
+    printf("Checksum OK\n");
     // Checksum OK proceed
      if(in_transit->seqnum == packet.acknum) {
        stoptimer(0);
