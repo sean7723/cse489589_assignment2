@@ -25,7 +25,7 @@ int window_size;
 float TIMEOUT = 20.0;
 int send_base;
 int next_seq_num;
-struct pkt [window_size];
+struct pkt[window_size];
 // B variables
 
 /* called from layer 5, passed the data to be sent to other side */
