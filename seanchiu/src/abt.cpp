@@ -21,7 +21,7 @@ struct pkt* in_transit;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
-  if(in_transit != nullptr) {
+  if(in_transit != NULL) {
     // If already waiting for message, add to buffer
     buffer.push(message);
   } else {
@@ -31,7 +31,7 @@ void A_output(struct msg message)
     to_send.acknum = 0;
     to_send.payload = message.data;
     // calculate checksum for pkt
-    to_send.checksum = to_send.seqnum + to_send.acknum + std::strtol(to_send.payload, nullptr, 10);
+    to_send.checksum = to_send.seqnum + to_send.acknum + std::strtol(to_send.payload, NULL, 10);
   }
 }
 
