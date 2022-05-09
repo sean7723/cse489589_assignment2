@@ -29,7 +29,7 @@ struct pkt** in_transit;
 std::queue<msg> buffer;
 // B variables
 int rcv_base;
-std::unordered_set <int> delivered;
+int* duplicates;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
@@ -181,12 +181,12 @@ void B_input(struct pkt packet)
   // Checksum OK proceed
   if(checksum == packet.checksum) {
     //printf("Packet Verified! \n");
-    if(delivered.find(checksum) != delivered.end()) {
+    if(duplicates[packet.seqnum] != packet.checksum) {
       printf("Packet Seq Num : %d\n ", packet.seqnum);
       printf("Expected Seq Num : %d\n ", rcv_base);
       if(packet.seqnum == rcv_base) {
         tolayer5(1, packet.payload);
-        delivered.insert(packet.checksum);
+        duplicates[packet.seqnum] = packet.checksum;
         struct pkt ack;
         ack.seqnum = packet.seqnum;
         ack.acknum = rcv_base;
@@ -219,4 +219,8 @@ void B_input(struct pkt packet)
 void B_init()
 {
   rcv_base = 0;
+  duplicates = new int[WINDOW_SIZE];
+  for(int i = 0; i < WINDOW_SIZE; i++) {
+    duplicates[i] = 0;
+  }
 }
