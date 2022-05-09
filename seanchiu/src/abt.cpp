@@ -26,6 +26,7 @@ std::queue<msg> buffer;
 struct pkt* in_transit = NULL;
 // B variables
 int expected_seq_num;
+
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
@@ -136,6 +137,7 @@ void B_input(struct pkt packet)
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
     // printf("Expected Seq Num : %d, Packet Seq Num : %d\n", expected_seq_num, packet.seqnum);
+    // Checksum OK proceed
     if(packet.seqnum != expected_seq_num) {
       struct pkt ack;
       ack.seqnum = packet.seqnum;
@@ -148,7 +150,6 @@ void B_input(struct pkt packet)
       ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
       tolayer3(1, ack);
     } else {
-      // Checksum OK proceed
       tolayer5(1, packet.payload);
       struct pkt ack;
       ack.seqnum = packet.seqnum;

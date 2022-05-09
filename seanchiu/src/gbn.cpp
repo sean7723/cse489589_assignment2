@@ -26,18 +26,58 @@ float TIMEOUT = 20.0;
 int send_base;
 int next_seq_num;
 struct pkt* in_transit = new struct pkt[WINDOW_SIZE];
+std::queue<msg> buffer;
 // B variables
+int rcv_base;
 
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
-
+  if(in_transit[next_seq_num] != NULL) {
+    // Window is full
+    buffer.push(message);
+  } else {
+    // Space to send in window
+    int payload_checksum = 0;
+    struct pkt* to_send = (struct pkt*)malloc(sizeof(struct pkt));
+    to_send->seqnum = next_seq;
+    to_send->acknum = 0;
+    for(int i = 0; i < 20; i++) {
+      to_send->payload[i] = message.data[i];
+      payload_checksum += (int)message.data[i];
+    }
+    // calculate checksum for pkt
+    to_send->checksum = to_send->seqnum + to_send->acknum + payload_checksum;
+    // store packet in case need to resent, andthen send packet
+    in_transit[next_seq_num] = to_send;
+    tolayer3(0, *to_send);
+    // start timer for new packet IF it is the oldest packet or base backet
+    if(send_base == next_seq_num) {
+      starttimer(0, TIMEOUT);
+    }
+    next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+  }
 }
 
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
-
+  // Verify Checksum
+  int packet_payload_checksum = 0;
+  for(int i = 0; i < 20; i++) {
+    packet_payload_checksum += (int)packet.payload[i];
+  }
+  int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
+  if(checksum == packet.checksum) {
+    if(in_transit[send_base]->seqnum == packet.acknum) {
+      stoptimer(0);
+    }
+    free(in_transit[send_base]);
+    send_base = (send_base + 1) % WINDOW_SIZE;
+    if(in_transit[send_base] != NULL) {
+      starttimer(0, TIMEOUT);
+    }
+  }
 }
 
 /* called when A's timer goes off */
@@ -52,6 +92,9 @@ void A_init()
 {
   next_seq_num = 0;
   send_base = 0;
+  for(int i = 0; i < WINDOW_SIZE; i++) {
+    in_transit[i] = NULL;
+  }
 }
 
 /* Note that with simplex transfer from a-to-B, there is no B_output() */
@@ -59,12 +102,34 @@ void A_init()
 /* called from layer 3, when a packet arrives for layer 4 at B*/
 void B_input(struct pkt packet)
 {
-
+  /// Verify checksum
+  int packet_payload_checksum = 0;
+  for(int i = 0; i < 20; i++) {
+    packet_payload_checksum += (int)packet.payload[i];
+  }
+  int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
+  // Checksum OK proceed
+  if(checksum == packet.checksum) {
+    if(packet.seqnum == rcv_base) {
+      tolayer5(1, packet.payload);
+      struct pkt ack;
+      ack.seqnum = packet.seqnum;
+      ack.acknum = rcv_base;
+      int payload_checksum = 0;
+      for(int i = 0; i < 20; i++) {
+        ack.payload[i] = packet.payload[i];
+        payload_checksum += packet.payload[i];
+      }
+      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+      tolayer3(1, ack);
+      rcv_base = (rcv_base + 1) % WINDOW_SIZE;
+    }
+  }
 }
 
 /* the following rouytine will be called once (only) before any other */
 /* entity B routines are called. You can use it to do any initialization */
 void B_init()
 {
-
+  rcv_base = 0;
 }
