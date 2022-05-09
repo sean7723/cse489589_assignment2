@@ -112,11 +112,12 @@ void A_timerinterrupt()
   // Packet at send_base timed out, need to resend send_base and every packet after that
   if(in_transit[send_base] != NULL) {
     printf("Start Resending! \n");
-    printf("Packet Contents : %s", in_transit[send_base]->payload);
+    printf("Packet Contents : %s\n", in_transit[send_base]->payload);
     tolayer3(0, *in_transit[send_base]);
     int curr_idx = (send_base + 1) % WINDOW_SIZE;
     while(curr_idx != next_seq_num) {
       tolayer3(0, *in_transit[curr_idx]);
+      printf("Packet Contents : %s\n", in_transit[curr_idx]->payload);
       curr_idx = (curr_idx + 1) % WINDOW_SIZE;
     }
     printf("Done Resending! \n");
