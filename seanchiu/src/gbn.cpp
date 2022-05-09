@@ -114,6 +114,7 @@ void A_timerinterrupt()
       tolayer3(0, *in_transit[curr_idx]);
       curr_idx = (curr_idx + 1) % WINDOW_SIZE;
     }
+    starttimer(0, TIMEOUT);
   }
 }
 
