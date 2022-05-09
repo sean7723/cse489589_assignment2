@@ -100,6 +100,38 @@ void A_input(struct pkt packet)
           next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
           buffer.pop();
         }
+      } else {
+        stoptimer(0);
+        while(send_base != packet.acknum + 1) {
+          free(in_transit[send_base])
+          in_transit[send_base] = NULL;
+          send_base = (send_base + 1) % WINDOW_SIZE;
+        }
+        if(in_transit[send_base] != NULL) {
+          //printf("Starting timer heere!\n");
+          starttimer(0, TIMEOUT);
+        }
+        if(buffer.size() > 0) {
+          // Still messages in buffer that needs to be sent
+          struct msg next_msg = buffer.front();
+          struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
+          next_packet->seqnum = next_seq_num;
+          next_packet->acknum = 0;
+          int payload_checksum = 0;
+          for(int i = 0; i < 20; i++) {
+            next_packet->payload[i] = next_msg.data[i];
+            payload_checksum += next_msg.data[i];
+          }
+          next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
+          tolayer3(0, *next_packet);
+          in_transit[next_seq_num] = next_packet;
+          if(send_base == next_seq_num) {
+            //printf("Attempting to start timer after!\n");
+            starttimer(0, TIMEOUT);
+          }
+          next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+          buffer.pop();
+        }
       }
     }
   }
@@ -109,7 +141,13 @@ void A_input(struct pkt packet)
 void A_timerinterrupt()
 {
   // Packet at send_base timed out, need to resend send_base and every packet after that
-
+  tolayer3(0, *in_transit[send_base]);
+  int curr_idx = (send_base + 1) % WINDOW_SIZE;
+  while(curr_idx != next_seq_num - 1) {
+    tolayer3(0, *in_transit[send_base]);
+    curr_idx = (curr_idx + 1) % WINDOW_SIZE;
+  }
+  starttimer(0, TIMEOUT);
 }
 
 /* the following routine will be called once (only) before any other */
@@ -154,6 +192,17 @@ void B_input(struct pkt packet)
       ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
       tolayer3(1, ack);
       rcv_base = (rcv_base + 1) % WINDOW_SIZE;
+    } else {
+      struct pkt ack;
+      ack.seqnum = packet.seqnum;
+      ack.acknum = (rcv_base - 1) % WINDOW_SIZE;
+      int payload_checksum = 0;
+      for(int i = 0; i < 20; i++) {
+        ack.payload[i] = packet.payload[i];
+        payload_checksum += packet.payload[i];
+      }
+      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+      tolayer3(1, ack);
     }
   }
 }
