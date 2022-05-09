@@ -73,7 +73,7 @@ void A_input(struct pkt packet)
       if(in_transit[send_base]->seqnum == packet.acknum) {
         stoptimer(0);
       }
-      free(*in_transit[send_base]);
+      free(in_transit[send_base]);
       in_transit[send_base] = NULL;
       send_base = (send_base + 1) % WINDOW_SIZE;
       if(in_transit[send_base] != NULL) {
