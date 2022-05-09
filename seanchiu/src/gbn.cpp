@@ -29,7 +29,7 @@ struct pkt** in_transit;
 std::queue<msg> buffer;
 // B variables
 int rcv_base;
-unordered_set <int> delivered;
+std::unordered_set <int> delivered;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
