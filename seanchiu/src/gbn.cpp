@@ -70,8 +70,6 @@ void A_input(struct pkt packet)
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
     if(in_transit[send_base] != NULL) {
-      printf("%d\n", packet.acknum);
-      printf("%d\n", in_transit[send_base]->seqnum);
       if(in_transit[send_base]->seqnum == packet.acknum) {
         stoptimer(0);
         free(in_transit[send_base]);
@@ -104,7 +102,7 @@ void A_input(struct pkt packet)
         }
       } else {
         stoptimer(0);
-        while(in_transit[send_base] != NULL && in_transit[send_base]->seqnum != packet.acknum + 1) {
+        while(in_transit[send_base] != NULL || in_transit[send_base]->seqnum != packet.acknum + 1) {
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
           send_base = (send_base + 1) % WINDOW_SIZE;
