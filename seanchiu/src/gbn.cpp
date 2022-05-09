@@ -105,6 +105,7 @@ void A_input(struct pkt packet)
         int curr_idx = send_base;
         while(in_transit[curr_idx] != NULL && count < WINDOW_SIZE) {
           count += 1;
+          curr_idx = (curr_idx + 1) % WINDOW
         }
         printf("%d\n", count);
         stoptimer(0);
