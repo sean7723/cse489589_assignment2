@@ -37,9 +37,10 @@ void A_output(struct msg message)
     // Window is full
     buffer.push(message);
   } else {
+    printf("here");
     // Space to send in window
     int payload_checksum = 0;
-    struct pkt* to_send = &(struct pkt)malloc(sizeof(struct pkt));
+    struct pkt* to_send = (struct pkt*)malloc(sizeof(struct pkt));
     to_send->seqnum = next_seq_num;
     to_send->acknum = 0;
     for(int i = 0; i < 20; i++) {
