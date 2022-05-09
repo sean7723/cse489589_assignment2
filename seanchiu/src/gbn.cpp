@@ -33,7 +33,6 @@ int rcv_base;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
-  printf("%d\n", WINDOW_SIZE);
   if(in_transit[next_seq_num] != NULL) {
     // Window is full
     buffer.push(message);
@@ -56,7 +55,7 @@ void A_output(struct msg message)
     if(send_base == next_seq_num) {
       starttimer(0, TIMEOUT);
     }
-    //next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+    next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
   }
 }
 
@@ -74,7 +73,7 @@ void A_input(struct pkt packet)
       stoptimer(0);
     }
     free(in_transit[send_base]);
-    //send_base = (send_base + 1) % WINDOW_SIZE;
+    send_base = (send_base + 1) % WINDOW_SIZE;
     if(in_transit[send_base] != NULL) {
       starttimer(0, TIMEOUT);
     }
@@ -124,7 +123,7 @@ void B_input(struct pkt packet)
       }
       ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
       tolayer3(1, ack);
-      //rcv_base = (rcv_base + 1) % WINDOW_SIZE;
+      rcv_base = (rcv_base + 1) % WINDOW_SIZE;
     }
   }
 }
