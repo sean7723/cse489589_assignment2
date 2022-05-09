@@ -74,7 +74,6 @@ void A_input(struct pkt packet)
         stoptimer(0);
         free(in_transit[send_base]);
         in_transit[send_base] = NULL;
-        printf("Not even being called here\n");
         send_base = (send_base + 1) % WINDOW_SIZE;
         if(in_transit[send_base] != NULL) {
           //printf("Starting timer heere!\n");
@@ -100,6 +99,13 @@ void A_input(struct pkt packet)
           }
           next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
           buffer.pop();
+        }
+      } else {
+        stoptimer(0);
+        while(in_transit[send_base] != NULL && send_base != packet.acknum) {
+          free(in_transit[send_base]);
+          in_transit[send_base] = NULL;
+          send_base = (send_base + 1) % WINDOW_SIZE;
         }
       }
     }
@@ -170,6 +176,7 @@ void B_input(struct pkt packet)
       tolayer3(1, ack);
       rcv_base = (rcv_base + 1) % WINDOW_SIZE;
     } else {
+      printf("Sent previous ack!\n");
       struct pkt ack;
       ack.seqnum = packet.seqnum;
       ack.acknum = (rcv_base - 1) % WINDOW_SIZE;
