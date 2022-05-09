@@ -101,6 +101,12 @@ void A_input(struct pkt packet)
           buffer.pop();
         }
       } else {
+        int count = 0;
+        int curr_idx = send_base;
+        while(in_transit[curr_idx] != NULL) {
+          count += 1;
+        }
+        return count;
         printf("%d\n", totalInWindow());
         stoptimer(0);
         while(in_transit[send_base] != NULL && in_transit[send_base]->seqnum != (packet.acknum + 1) % WINDOW_SIZE) {
@@ -133,15 +139,6 @@ void A_input(struct pkt packet)
       }
     }
   }
-}
-
-int totalInWindow() {
-  int count = 0;
-  int curr_idx = send_base;
-  while(in_transit[curr_idx] != NULL) {
-    count += 1;
-  }
-  return count;
 }
 
 /* called when A's timer goes off */
