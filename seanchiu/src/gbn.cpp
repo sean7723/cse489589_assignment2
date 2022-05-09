@@ -25,7 +25,7 @@ int WINDOW_SIZE;
 float TIMEOUT = 20.0;
 int send_base;
 int next_seq_num;
-struct pkt** in_transit = new struct pkt*[15];
+struct pkt** in_transit;
 std::queue<msg> buffer;
 // B variables
 int rcv_base;
@@ -73,9 +73,7 @@ void A_input(struct pkt packet)
       if(in_transit[send_base]->seqnum == packet.acknum) {
         stoptimer(0);
       }
-      printf("here1\n");
       free(in_transit[send_base]);
-      printf("here2\n");
       in_transit[send_base] = NULL;
       send_base = (send_base + 1) % WINDOW_SIZE;
       if(in_transit[send_base] != NULL) {
@@ -118,6 +116,7 @@ void A_init()
   WINDOW_SIZE = getwinsize();
   next_seq_num = 0;
   send_base = 0;
+  in_transit = new struct pkt*[WINDOW_SIZE]
   for(int i = 0; i < WINDOW_SIZE; i++) {
     in_transit[i] = NULL;
   }
