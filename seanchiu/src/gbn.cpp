@@ -106,7 +106,14 @@ void A_input(struct pkt packet)
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
-
+  // Packet at send_base timed out, need to resend send_base and every packet after that
+  if(in_transit[send_base] != NULL) {
+    tolayer3(0, *in_transit[send_base]);
+    int curr_idx = (send_base + 1) % WINDOW_SIZE;
+    while(curr_idx != next_seq_num) {
+      tolayer3(0, *in_transit[send_base]);
+    }
+  }
 }
 
 /* the following routine will be called once (only) before any other */
