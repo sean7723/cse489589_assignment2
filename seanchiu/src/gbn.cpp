@@ -136,4 +136,3 @@ void B_init()
 {
   rcv_base = 0;
 }
-print ("Hello World")
