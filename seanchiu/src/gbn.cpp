@@ -62,6 +62,8 @@ void A_output(struct msg message)
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
+  printf("%d\n", send_base);
+  printf("%d\n", next_seq_num);
   // Verify Checksum
   int packet_payload_checksum = 0;
   for(int i = 0; i < 20; i++) {
@@ -102,8 +104,7 @@ void A_input(struct pkt packet)
         }
       } else {
         stoptimer(0);
-        int count = 1;
-        while(count < WINDOW_SIZE && in_transit[send_base] != NULL && in_transit[send_base]->seqnum != packet.acknum + 1) {
+        while(in_transit[send_base] != NULL && in_transit[send_base]->seqnum != packet.acknum + 1) {
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
           send_base = (send_base + 1) % WINDOW_SIZE;
@@ -124,7 +125,6 @@ void A_input(struct pkt packet)
             next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
             buffer.pop();
           }
-          count++;
         }
         if(in_transit[send_base] != NULL) {
           //printf("Starting timer heere!\n");
