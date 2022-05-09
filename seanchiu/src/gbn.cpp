@@ -76,7 +76,7 @@ void A_input(struct pkt packet)
         in_transit[send_base] = NULL;
         send_base = (send_base + 1) % WINDOW_SIZE;
         if(in_transit[send_base] != NULL) {
-          printf("Starting timer heere!\n");
+          //printf("Starting timer heere!\n");
           starttimer(0, TIMEOUT);
         }
         if(buffer.size() > 0) {
@@ -94,7 +94,7 @@ void A_input(struct pkt packet)
           tolayer3(0, *next_packet);
           in_transit[next_seq_num] = next_packet;
           if(send_base == next_seq_num) {
-            printf("Attempting to start timer after!\n");
+            //printf("Attempting to start timer after!\n");
             starttimer(0, TIMEOUT);
           }
           next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
@@ -116,9 +116,9 @@ void A_timerinterrupt()
       tolayer3(0, *in_transit[curr_idx]);
       curr_idx = (curr_idx + 1) % WINDOW_SIZE;
     }
-    printf("Starting interupt timer \n");
+    //printf("Starting interupt timer \n");
     starttimer(0, TIMEOUT);
-    printf("Started interupt timer \n");
+    //printf("Started interupt timer \n");
   }
 }
 
