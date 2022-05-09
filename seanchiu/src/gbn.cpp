@@ -77,6 +77,7 @@ void A_input(struct pkt packet)
       in_transit[send_base] = NULL;
       send_base = (send_base + 1) % WINDOW_SIZE;
       if(in_transit[send_base] != NULL) {
+        printf("Starting first timer \n");
         starttimer(0, TIMEOUT);
       }
       if(buffer.size() > 0) {
