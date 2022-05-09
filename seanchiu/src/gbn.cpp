@@ -92,7 +92,7 @@ void A_input(struct pkt packet)
         }
         next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
         tolayer3(0, *next_packet);
-        in_transit[next_seq_num] = to_send;
+        in_transit[next_seq_num] = next_packet;
         if(send_base == next_seq_num) {
           starttimer(0, TIMEOUT);
         }
