@@ -102,7 +102,16 @@ void A_input(struct pkt packet)
         }
       } else {
         stoptimer(0);
-        A_timerinterrupt();
+        printf("Send base : %d\n", send_base);
+        printf("%d\n", in_transit[send_base]->seqnum);
+        tolayer3(0, *in_transit[send_base]);
+        int curr_idx = (send_base + 1) % WINDOW_SIZE;
+        while(curr_idx != next_seq_num) {
+          tolayer3(0, *in_transit[curr_idx]);
+          printf("Packet Contents : %s\n", in_transit[curr_idx]->payload);
+          curr_idx = (curr_idx + 1) % WINDOW_SIZE;
+        }
+        starttimer(0, TIMEOUT);
       }
     }
   }
