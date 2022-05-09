@@ -107,14 +107,14 @@ void A_input(struct pkt packet)
 void A_timerinterrupt()
 {
   // Packet at send_base timed out, need to resend send_base and every packet after that
-  if(in_transit[send_base] != NULL) {
-    tolayer3(0, *in_transit[send_base]);
-    int curr_idx = (send_base + 1) % WINDOW_SIZE;
-    while(curr_idx != next_seq_num) {
-      tolayer3(0, *in_transit[curr_idx]);
-      curr_idx = (curr_idx + 1) % WINDOW_SIZE;
-    }
-  }
+  // if(in_transit[send_base] != NULL) {
+  //   tolayer3(0, *in_transit[send_base]);
+  //   int curr_idx = (send_base + 1) % WINDOW_SIZE;
+  //   while(curr_idx != next_seq_num) {
+  //     tolayer3(0, *in_transit[curr_idx]);
+  //     curr_idx = (curr_idx + 1) % WINDOW_SIZE;
+  //   }
+  // }
 }
 
 /* the following routine will be called once (only) before any other */
