@@ -25,7 +25,7 @@ const int WINDOW_SIZE = getwinsize();
 float TIMEOUT = 20.0;
 int send_base;
 int next_seq_num;
-struct pkt** in_transit = new struct pkt[WINDOW_SIZE];
+struct pkt** in_transit = new struct pkt*[WINDOW_SIZE];
 std::queue<msg> buffer;
 // B variables
 int rcv_base;
@@ -40,7 +40,7 @@ void A_output(struct msg message)
     // Space to send in window
     int payload_checksum = 0;
     struct pkt* to_send = (struct pkt*)malloc(sizeof(struct pkt));
-    to_send->seqnum = next_seq;
+    to_send->seqnum = next_seq_num;
     to_send->acknum = 0;
     for(int i = 0; i < 20; i++) {
       to_send->payload[i] = message.data[i];
