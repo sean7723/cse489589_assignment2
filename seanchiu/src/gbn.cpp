@@ -103,6 +103,7 @@ void A_input(struct pkt packet)
       } else {
         stoptimer(0);
         printf("Send base : %d\n", send_base);
+        printf(in_transit[send_base]);
         while(in_transit[send_base] != NULL && send_base != packet.acknum + 1) {
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
