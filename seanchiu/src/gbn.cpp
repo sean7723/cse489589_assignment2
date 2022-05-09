@@ -102,7 +102,6 @@ void A_input(struct pkt packet)
         }
       } else {
         stoptimer(0);
-        printf("Hello! \n");
         while(in_transit[send_base] != NULL && in_transit[send_base]->seqnum != (packet.acknum + 1) % WINDOW_SIZE) {
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
@@ -129,7 +128,7 @@ void A_input(struct pkt packet)
           //printf("Starting timer heere!\n");
           starttimer(0, TIMEOUT);
         }
-        printf("SEND_BASE Val after correction : %d\n", send_base);
+        //printf("SEND_BASE Val after correction : %d\n", send_base);
       }
     }
   }
@@ -174,9 +173,9 @@ void B_input(struct pkt packet)
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   // Checksum OK proceed
   if(checksum == packet.checksum) {
-    printf("Packet Verified! \n");
-    printf("Packet Seq Num : %d\n ", packet.seqnum);
-    printf("Expected Seq Num : %d\n ", rcv_base);
+    //printf("Packet Verified! \n");
+    //printf("Packet Seq Num : %d\n ", packet.seqnum);
+    //printf("Expected Seq Num : %d\n ", rcv_base);
     if(packet.seqnum == rcv_base) {
       tolayer5(1, packet.payload);
       struct pkt ack;
