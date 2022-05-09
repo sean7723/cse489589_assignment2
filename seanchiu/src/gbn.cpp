@@ -94,6 +94,7 @@ void A_input(struct pkt packet)
         tolayer3(0, *next_packet);
         in_transit[next_seq_num] = next_packet;
         if(send_base == next_seq_num) {
+          printf("Attempting to start timer after!\n");
           starttimer(0, TIMEOUT);
         }
         next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
