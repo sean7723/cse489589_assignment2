@@ -111,7 +111,7 @@ void A_timerinterrupt()
     tolayer3(0, *in_transit[send_base]);
     int curr_idx = (send_base + 1) % WINDOW_SIZE;
     while(curr_idx != next_seq_num) {
-      tolayer3(0, *in_transit[send_base]);
+      tolayer3(0, *in_transit[curr_idx]);
     }
   }
 }
