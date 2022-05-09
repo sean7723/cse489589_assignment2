@@ -69,6 +69,7 @@ void A_input(struct pkt packet)
   }
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
+    if(in_transit[send_base] != NULL) {
     if(in_transit[send_base]->seqnum == packet.acknum) {
       stoptimer(0);
     }
@@ -77,6 +78,7 @@ void A_input(struct pkt packet)
     if(in_transit[send_base] != NULL) {
       starttimer(0, TIMEOUT);
     }
+  }
   }
 }
 
@@ -134,3 +136,4 @@ void B_init()
 {
   rcv_base = 0;
 }
+print ("Hello World")
