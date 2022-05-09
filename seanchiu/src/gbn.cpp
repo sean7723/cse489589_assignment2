@@ -20,7 +20,7 @@
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
 // Shared Variable
-const int WINDOW_SIZE = getwinsize();
+int WINDOW_SIZE;
 // A variables
 float TIMEOUT = 20.0;
 int send_base;
@@ -91,6 +91,7 @@ void A_timerinterrupt()
 /* entity A routines are called. You can use it to do any initialization */
 void A_init()
 {
+  WINDOW_SIZE = getwinsize();
   next_seq_num = 0;
   send_base = 0;
   for(int i = 0; i < WINDOW_SIZE; i++) {
