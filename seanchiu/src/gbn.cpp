@@ -62,7 +62,7 @@ void A_output(struct msg message)
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
-  printf("%d\n", in_transit[send_base]->seqnum);
+  //printf("%d\n", in_transit[send_base]->seqnum);
   printf("%d\n", packet.acknum);
   // Verify Checksum
   int packet_payload_checksum = 0;
