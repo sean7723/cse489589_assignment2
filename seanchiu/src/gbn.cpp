@@ -25,7 +25,7 @@ int WINDOW_SIZE;
 float TIMEOUT = 20.0;
 int send_base;
 int next_seq_num;
-struct pkt** in_transit = new struct pkt*[WINDOW_SIZE];
+struct pkt** in_transit = new struct pkt*[15];
 std::queue<msg> buffer;
 // B variables
 int rcv_base;
