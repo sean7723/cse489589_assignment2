@@ -145,7 +145,7 @@ void A_timerinterrupt()
   tolayer3(0, *in_transit[send_base]);
   int curr_idx = (send_base + 1) % WINDOW_SIZE;
   while(curr_idx != next_seq_num - 1) {
-    tolayer3(0, *in_transit[send_base]);
+    tolayer3(0, *in_transit[curr_idx]);
     curr_idx = (curr_idx + 1) % WINDOW_SIZE;
   }
   starttimer(0, TIMEOUT);
