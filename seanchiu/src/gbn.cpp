@@ -37,7 +37,6 @@ void A_output(struct msg message)
     // Window is full
     buffer.push(message);
   } else {
-    printf("here\n");
     // Space to send in window
     int payload_checksum = 0;
     struct pkt* to_send = (struct pkt*)malloc(sizeof(struct pkt));
