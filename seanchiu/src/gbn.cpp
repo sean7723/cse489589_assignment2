@@ -107,7 +107,7 @@ void A_input(struct pkt packet)
           count += 1;
           curr_idx = (curr_idx + 1) % WINDOW_SIZE;
         }
-        printf("%d\n", count);
+        printf("%d\n", in_transit[send_base]->seqnum);
         stoptimer(0);
         while(in_transit[send_base] != NULL && in_transit[send_base]->seqnum != (packet.acknum + 1) % WINDOW_SIZE) {
           free(in_transit[send_base]);
