@@ -102,7 +102,8 @@ void A_input(struct pkt packet)
         }
       } else {
         stoptimer(0);
-        while(in_transit[send_base] != NULL && in_transit[send_base]->seqnum != packet.acknum + 1) {
+        int count = 1;
+        while(count < WINDOW_SIZE && in_transit[send_base] != NULL && in_transit[send_base]->seqnum != packet.acknum + 1) {
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
           send_base = (send_base + 1) % WINDOW_SIZE;
@@ -123,6 +124,7 @@ void A_input(struct pkt packet)
             next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
             buffer.pop();
           }
+          count++;
         }
         if(in_transit[send_base] != NULL) {
           //printf("Starting timer heere!\n");
