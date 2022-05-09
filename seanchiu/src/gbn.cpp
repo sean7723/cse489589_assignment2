@@ -181,8 +181,8 @@ void B_input(struct pkt packet)
   // Checksum OK proceed
   if(checksum == packet.checksum) {
     //printf("Packet Verified! \n");
-    //printf("Packet Seq Num : %d\n ", packet.seqnum);
-    //printf("Expected Seq Num : %d\n ", rcv_base);
+    printf("Packet Seq Num : %d\n ", packet.seqnum);
+    printf("Expected Seq Num : %d\n ", rcv_base);
     if(packet.seqnum == rcv_base) {
       tolayer5(1, packet.payload);
       struct pkt ack;
