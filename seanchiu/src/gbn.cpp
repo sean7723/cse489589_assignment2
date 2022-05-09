@@ -116,7 +116,7 @@ void A_init()
   WINDOW_SIZE = getwinsize();
   next_seq_num = 0;
   send_base = 0;
-  in_transit = new struct pkt*[WINDOW_SIZE]
+  in_transit = new struct pkt*[WINDOW_SIZE];
   for(int i = 0; i < WINDOW_SIZE; i++) {
     in_transit[i] = NULL;
   }
