@@ -107,7 +107,7 @@ void A_input(struct pkt packet)
           count += 1;
           curr_idx = (curr_idx + 1) % WINDOW_SIZE;
         }
-        printf("%d\n", in_transit[send_base]->seqnum);
+        //printf("%d\n", in_transit[send_base]->seqnum);
         stoptimer(0);
         while(in_transit[send_base] != NULL && in_transit[send_base]->seqnum != (packet.acknum + 1) % WINDOW_SIZE) {
           free(in_transit[send_base]);
@@ -182,8 +182,8 @@ void B_input(struct pkt packet)
   if(checksum == packet.checksum) {
     //printf("Packet Verified! \n");
     if(duplicates[packet.seqnum] != packet.checksum) {
-      printf("Packet Seq Num : %d\n ", packet.seqnum);
-      printf("Expected Seq Num : %d\n ", rcv_base);
+      //printf("Packet Seq Num : %d\n ", packet.seqnum);
+      //printf("Expected Seq Num : %d\n ", rcv_base);
       if(packet.seqnum == rcv_base) {
         tolayer5(1, packet.payload);
         duplicates[packet.seqnum] = packet.checksum;
