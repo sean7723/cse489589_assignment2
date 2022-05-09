@@ -102,13 +102,7 @@ void A_input(struct pkt packet)
         }
       } else {
         stoptimer(0);
-        printf("Send base : %d\n", send_base);
-        printf("%d\n", in_transit[send_base]->seqnum);
-        while(in_transit[send_base] != NULL && send_base != packet.acknum + 1) {
-          free(in_transit[send_base]);
-          in_transit[send_base] = NULL;
-          send_base = (send_base + 1) % WINDOW_SIZE;
-        }
+        A_timerinterrupt();
       }
     }
   }
