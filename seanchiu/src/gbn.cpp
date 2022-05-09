@@ -100,18 +100,6 @@ void A_input(struct pkt packet)
           next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
           buffer.pop();
         }
-      } else {
-        stoptimer(0);
-        printf("Send base : %d\n", send_base);
-        printf("%d\n", in_transit[send_base]->seqnum);
-        tolayer3(0, *in_transit[send_base]);
-        int curr_idx = (send_base + 1) % WINDOW_SIZE;
-        while(curr_idx != next_seq_num) {
-          tolayer3(0, *in_transit[curr_idx]);
-          printf("Packet Contents : %s\n", in_transit[curr_idx]->payload);
-          curr_idx = (curr_idx + 1) % WINDOW_SIZE;
-        }
-        starttimer(0, TIMEOUT);
       }
     }
   }
@@ -121,21 +109,7 @@ void A_input(struct pkt packet)
 void A_timerinterrupt()
 {
   // Packet at send_base timed out, need to resend send_base and every packet after that
-  if(in_transit[send_base] != NULL) {
-    printf("Start Resending! \n");
-    printf("Packet Contents : %s\n", in_transit[send_base]->payload);
-    tolayer3(0, *in_transit[send_base]);
-    int curr_idx = (send_base + 1) % WINDOW_SIZE;
-    while(curr_idx != next_seq_num) {
-      tolayer3(0, *in_transit[curr_idx]);
-      printf("Packet Contents : %s\n", in_transit[curr_idx]->payload);
-      curr_idx = (curr_idx + 1) % WINDOW_SIZE;
-    }
-    printf("Done Resending! \n");
-    //printf("Starting interupt timer \n");
-    starttimer(0, TIMEOUT);
-    //printf("Started interupt timer \n");
-  }
+
 }
 
 /* the following routine will be called once (only) before any other */
@@ -180,18 +154,6 @@ void B_input(struct pkt packet)
       ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
       tolayer3(1, ack);
       rcv_base = (rcv_base + 1) % WINDOW_SIZE;
-    } else {
-      printf("Sent previous ack!\n");
-      struct pkt ack;
-      ack.seqnum = packet.seqnum;
-      ack.acknum = (rcv_base - 1) % WINDOW_SIZE;
-      int payload_checksum = 0;
-      for(int i = 0; i < 20; i++) {
-        ack.payload[i] = packet.payload[i];
-        payload_checksum += packet.payload[i];
-      }
-      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
-      tolayer3(1, ack);
     }
   }
 }
