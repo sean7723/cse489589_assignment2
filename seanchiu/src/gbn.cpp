@@ -55,7 +55,7 @@ void A_output(struct msg message)
     if(send_base == next_seq_num) {
       starttimer(0, TIMEOUT);
     }
-    //next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+    next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
   }
 }
 
