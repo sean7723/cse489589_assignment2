@@ -62,8 +62,6 @@ void A_output(struct msg message)
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
-  printf("%d\n", packet.acknum);
-  printf("%d\n", in_transit[send_base]->seqnum);
   // Verify Checksum
   int packet_payload_checksum = 0;
   for(int i = 0; i < 20; i++) {
@@ -72,6 +70,8 @@ void A_input(struct pkt packet)
   int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
   if(checksum == packet.checksum) {
     if(in_transit[send_base] != NULL) {
+      printf("%d\n", packet.acknum);
+      printf("%d\n", in_transit[send_base]->seqnum);
       if(in_transit[send_base]->seqnum == packet.acknum) {
         stoptimer(0);
         free(in_transit[send_base]);
