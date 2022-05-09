@@ -75,6 +75,7 @@ void A_input(struct pkt packet)
         stoptimer(0);
       }
       free(in_transit[send_base]);
+      in_transit[send_base] = NULL;
       send_base = (send_base + 1) % WINDOW_SIZE;
       if(in_transit[send_base] != NULL) {
         starttimer(0, TIMEOUT);
@@ -97,6 +98,7 @@ void A_input(struct pkt packet)
           starttimer(0, TIMEOUT);
         }
         next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+        buffer.pop();
       }
     }
   }
