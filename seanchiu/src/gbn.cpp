@@ -29,7 +29,7 @@ struct pkt** in_transit;
 std::queue<msg> buffer;
 // B variables
 int rcv_base;
-
+unordered_set <int> delivered;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
@@ -181,32 +181,35 @@ void B_input(struct pkt packet)
   // Checksum OK proceed
   if(checksum == packet.checksum) {
     //printf("Packet Verified! \n");
-    printf("Packet Seq Num : %d\n ", packet.seqnum);
-    printf("Expected Seq Num : %d\n ", rcv_base);
-    if(packet.seqnum == rcv_base) {
-      tolayer5(1, packet.payload);
-      struct pkt ack;
-      ack.seqnum = packet.seqnum;
-      ack.acknum = rcv_base;
-      int payload_checksum = 0;
-      for(int i = 0; i < 20; i++) {
-        ack.payload[i] = packet.payload[i];
-        payload_checksum += packet.payload[i];
+    if(delivered.find(checksum) != delivered.end()) {
+      printf("Packet Seq Num : %d\n ", packet.seqnum);
+      printf("Expected Seq Num : %d\n ", rcv_base);
+      if(packet.seqnum == rcv_base) {
+        tolayer5(1, packet.payload);
+        delivered.insert(packet.checksum);
+        struct pkt ack;
+        ack.seqnum = packet.seqnum;
+        ack.acknum = rcv_base;
+        int payload_checksum = 0;
+        for(int i = 0; i < 20; i++) {
+          ack.payload[i] = packet.payload[i];
+          payload_checksum += packet.payload[i];
+        }
+        ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+        tolayer3(1, ack);
+        rcv_base = (rcv_base + 1) % WINDOW_SIZE;
+      } else {
+        struct pkt ack;
+        ack.seqnum = packet.seqnum;
+        ack.acknum = (rcv_base - 1) % WINDOW_SIZE;
+        int payload_checksum = 0;
+        for(int i = 0; i < 20; i++) {
+          ack.payload[i] = packet.payload[i];
+          payload_checksum += packet.payload[i];
+        }
+        ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+        tolayer3(1, ack);
       }
-      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
-      tolayer3(1, ack);
-      rcv_base = (rcv_base + 1) % WINDOW_SIZE;
-    } else {
-      struct pkt ack;
-      ack.seqnum = packet.seqnum;
-      ack.acknum = (rcv_base - 1) % WINDOW_SIZE;
-      int payload_checksum = 0;
-      for(int i = 0; i < 20; i++) {
-        ack.payload[i] = packet.payload[i];
-        payload_checksum += packet.payload[i];
-      }
-      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
-      tolayer3(1, ack);
     }
   }
 }
