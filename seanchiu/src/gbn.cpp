@@ -79,6 +79,25 @@ void A_input(struct pkt packet)
       if(in_transit[send_base] != NULL) {
         starttimer(0, TIMEOUT);
       }
+      if(buffer.size() > 0) {
+        // Still messages in buffer that needs to be sent
+        struct msg next_msg = buffer.front();
+        struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
+        next_packet->seqnum = next_seq_num;
+        next_packet->acknum = 0;
+        int payload_checksum = 0;
+        for(int i = 0; i < 20; i++) {
+          next_packet->payload[i] = next_msg.data[i];
+          payload_checksum += next_msg.data[i];
+        }
+        next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
+        tolayer3(0, *next_packet);
+        in_transit[next_seq_num] = to_send;
+        if(send_base == next_seq_num) {
+          starttimer(0, TIMEOUT);
+        }
+        next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+      }
     }
   }
 }
