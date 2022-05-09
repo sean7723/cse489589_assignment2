@@ -53,6 +53,7 @@ void A_output(struct msg message)
     tolayer3(0, *to_send);
     // start timer for new packet IF it is the oldest packet or base backet
     if(send_base == next_seq_num) {
+      printf("Starting first timer \n");
       starttimer(0, TIMEOUT);
     }
     next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
@@ -77,7 +78,6 @@ void A_input(struct pkt packet)
       in_transit[send_base] = NULL;
       send_base = (send_base + 1) % WINDOW_SIZE;
       if(in_transit[send_base] != NULL) {
-        printf("Starting first timer \n");
         starttimer(0, TIMEOUT);
       }
       if(buffer.size() > 0) {
