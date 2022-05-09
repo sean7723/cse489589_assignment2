@@ -107,6 +107,7 @@ void A_input(struct pkt packet)
           in_transit[send_base] = NULL;
           send_base = (send_base + 1) % WINDOW_SIZE;
         }
+        printf("SEND_BASE Val after correction : %d\n", send_base);
         if(in_transit[send_base] != NULL) {
           //printf("Starting timer heere!\n");
           starttimer(0, TIMEOUT);
