@@ -102,37 +102,37 @@ void A_input(struct pkt packet)
         }
       } else {
         stoptimer(0);
-        while(in_transit[send_base]->seqnum != packet.acknum) {
+        while(in_transit[send_base] != NULL && in_transit[send_base]->seqnum != packet.acknum + 1) {
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
           send_base = (send_base + 1) % WINDOW_SIZE;
+          if(buffer.size() > 0) {
+            // Still messages in buffer that needs to be sent
+            struct msg next_msg = buffer.front();
+            struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
+            next_packet->seqnum = next_seq_num;
+            next_packet->acknum = 0;
+            int payload_checksum = 0;
+            for(int i = 0; i < 20; i++) {
+              next_packet->payload[i] = next_msg.data[i];
+              payload_checksum += next_msg.data[i];
+            }
+            next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
+            tolayer3(0, *next_packet);
+            in_transit[next_seq_num] = next_packet;
+            if(send_base == next_seq_num) {
+              //printf("Attempting to start timer after!\n");
+              starttimer(0, TIMEOUT);
+            }
+            next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+            buffer.pop();
+          }
         }
-        printf("SEND_BASE Val after correction : %d\n", send_base);
         if(in_transit[send_base] != NULL) {
           //printf("Starting timer heere!\n");
           starttimer(0, TIMEOUT);
         }
-        if(buffer.size() > 0) {
-          // Still messages in buffer that needs to be sent
-          struct msg next_msg = buffer.front();
-          struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
-          next_packet->seqnum = next_seq_num;
-          next_packet->acknum = 0;
-          int payload_checksum = 0;
-          for(int i = 0; i < 20; i++) {
-            next_packet->payload[i] = next_msg.data[i];
-            payload_checksum += next_msg.data[i];
-          }
-          next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
-          tolayer3(0, *next_packet);
-          in_transit[next_seq_num] = next_packet;
-          if(send_base == next_seq_num) {
-            //printf("Attempting to start timer after!\n");
-            starttimer(0, TIMEOUT);
-          }
-          next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
-          buffer.pop();
-        }
+        printf("SEND_BASE Val after correction : %d\n", send_base);
       }
     }
   }
