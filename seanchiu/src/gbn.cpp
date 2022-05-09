@@ -39,7 +39,7 @@ void A_output(struct msg message)
   } else {
     // Space to send in window
     int payload_checksum = 0;
-    struct pkt* to_send;
+    struct pkt* to_send = (struct pkt*)malloc(sizeof(struct pkt));
     to_send->seqnum = next_seq_num;
     to_send->acknum = 0;
     for(int i = 0; i < 20; i++) {
@@ -73,7 +73,7 @@ void A_input(struct pkt packet)
       if(in_transit[send_base]->seqnum == packet.acknum) {
         stoptimer(0);
       }
-      // free(in_transit[send_base]);
+      free(*in_transit[send_base]);
       in_transit[send_base] = NULL;
       send_base = (send_base + 1) % WINDOW_SIZE;
       if(in_transit[send_base] != NULL) {
@@ -82,7 +82,7 @@ void A_input(struct pkt packet)
       if(buffer.size() > 0) {
         // Still messages in buffer that needs to be sent
         struct msg next_msg = buffer.front();
-        struct pkt* next_packet;
+        struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
         next_packet->seqnum = next_seq_num;
         next_packet->acknum = 0;
         int payload_checksum = 0;
