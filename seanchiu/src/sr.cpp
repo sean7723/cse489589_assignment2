@@ -172,12 +172,15 @@ void A_input(struct pkt packet)
         // Ack not in-order need to buffer, need to make sure that we are not accepting duplicate acks
         if(ack_buffer[packet.acknum] == NULL) {
           if(in_transit[packet.acknum] != NULL) {
-            bool correct_payload = true;
+            bool correct_packet = true;
             for(int i = 0; i < 20; i++) {
               if(in_transit[packet.acknum]->payload[i] != packet.payload[i]) {
-                correct_payload = false;
+                correct_packet = false;
                 break;
               }
+            }
+            if(packet.seqnum != in_transit[packet.acknum]->seqnum) {
+              correct_packet = false;
             }
             if(correct_payload) {
               struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
@@ -187,7 +190,7 @@ void A_input(struct pkt packet)
               for(int i = 0; i < 20; i++) {
                 packet_to_buffer->payload[i] = packet.payload[i];
               }
-              packet_to_buffer->checksum = packet_to_buffer->seqnum + packet_to_buffer->acknum + payload_checksum;
+              packet_to_buffer->checksum = packet.checksum;
               ack_buffer[packet.acknum] = packet_to_buffer;
               if(timer_order.front() != packet.acknum) {
                 int timer_order_front = timer_order.front();
