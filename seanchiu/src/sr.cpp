@@ -114,6 +114,9 @@ void A_input(struct pkt packet)
             }
           } else {
             timer_order.pop();
+            if(timer_order.size() > 0) {
+              printf("Next time out packet is : %d\n", timer_order.front());
+            }
           }
           if(buffer.size() > 0) {
             // Still messages in buffer that needs to be sent
