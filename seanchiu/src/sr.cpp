@@ -332,12 +332,6 @@ void B_input(struct pkt packet)
             break;
           }
         }
-        if(packet.seqnum != received_buffer[packet.seqnum]->seqnum) {
-          same_packet = false;
-        }
-        if(packet.acknum != received_buffer[packet.seqnum]->acknum) {
-          same_packet = false;
-        }
         if(same_packet) {
           struct pkt ack;
           ack.seqnum = packet.seqnum;
