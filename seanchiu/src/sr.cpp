@@ -96,29 +96,28 @@ void A_input(struct pkt packet)
           stoptimer(0);
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
+          if(ack_buffer[send_base] == NULL && timer_order.front() != curr_pkt.acknum) {
+            int timer_order_front = timer_order.front();
+            timer_order.push(timer_order_front);
+            timer_order.pop();
+            while(timer_order.front() != timer_order_front) {
+              if(timer_order.front() == curr_pkt.acknum) {
+                printf("Removed %d from top of timer order\n", timer_order.front());
+                timer_order.pop();
+              } else {
+                timer_order.push(timer_order.front());
+                timer_order.pop();
+              }
+            }
+          } else {
+            timer_order.pop();
+            if(timer_order.size() > 0) {
+              printf("Next time out packet is : %d\n", timer_order.front());
+            }
+          }
           if(ack_buffer[send_base] != NULL) {
             free(ack_buffer[send_base]);
             ack_buffer[send_base] = NULL;
-          } else {
-            if(timer_order.front() != curr_pkt.acknum) {
-              int timer_order_front = timer_order.front();
-              timer_order.push(timer_order_front);
-              timer_order.pop();
-              while(timer_order.front() != timer_order_front) {
-                if(timer_order.front() == curr_pkt.acknum) {
-                  printf("Removed %d from top of timer order\n", timer_order.front());
-                  timer_order.pop();
-                } else {
-                  timer_order.push(timer_order.front());
-                  timer_order.pop();
-                }
-              }
-            } else {
-              timer_order.pop();
-              if(timer_order.size() > 0) {
-                printf("Next time out packet is : %d\n", timer_order.front());
-              }
-            }
           }
           send_base = (send_base + 1) % WINDOW_SIZE;
           if(in_transit[send_base] != NULL) {
