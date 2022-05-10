@@ -99,29 +99,30 @@ void A_input(struct pkt packet)
           if(ack_buffer[send_base] != NULL) {
             free(ack_buffer[send_base]);
             ack_buffer[send_base] = NULL;
+          } else {
+            if(timer_order.front() != curr_pkt.acknum) {
+              int timer_order_front = timer_order.front();
+              timer_order.push(timer_order_front);
+              timer_order.pop();
+              while(timer_order.front() != timer_order_front) {
+                if(timer_order.front() == curr_pkt.acknum) {
+                  printf("Removed %d from top of timer order\n", timer_order.front());
+                  timer_order.pop();
+                } else {
+                  timer_order.push(timer_order.front());
+                  timer_order.pop();
+                }
+              }
+            } else {
+              timer_order.pop();
+              if(timer_order.size() > 0) {
+                printf("Next time out packet is : %d\n", timer_order.front());
+              }
+            }
           }
           send_base = (send_base + 1) % WINDOW_SIZE;
           if(in_transit[send_base] != NULL) {
             starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
-          }
-          if(timer_order.front() != curr_pkt.acknum) {
-            int timer_order_front = timer_order.front();
-            timer_order.push(timer_order_front);
-            timer_order.pop();
-            while(timer_order.front() != timer_order_front) {
-              if(timer_order.front() == curr_pkt.acknum) {
-                printf("Removed %d from top of timer order\n", timer_order.front());
-                timer_order.pop();
-              } else {
-                timer_order.push(timer_order.front());
-                timer_order.pop();
-              }
-            }
-          } else {
-            timer_order.pop();
-            if(timer_order.size() > 0) {
-              printf("Next time out packet is : %d\n", timer_order.front());
-            }
           }
           if(buffer.size() > 0) {
             // Still messages in buffer that needs to be sent
