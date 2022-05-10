@@ -71,7 +71,7 @@ void A_output(struct msg message)
 void A_input(struct pkt packet)
 {
   for(int i = 0; i < timer_order.size(); i++) {
-    printf("Timer order at position %d is : %d\n", i, timer_order.front());
+    // printf("Timer order at position %d is : %d\n", i, timer_order.front());
     timer_order.push(timer_order.front());
     timer_order.pop();
   }
@@ -90,9 +90,9 @@ void A_input(struct pkt packet)
         // Next ack received, move window and keep on doing for in-order packets
         struct pkt curr_pkt = packet;
         while(in_transit[send_base] != NULL && curr_pkt.acknum == in_transit[send_base]->seqnum) {
-          printf("Received Ack : %d\n", curr_pkt.acknum);
-          printf("Expected Ack : %d\n", in_transit[send_base]->seqnum);
-          printf("Timer at top : %d\n", timer_order.front());
+          //printf("Received Ack : %d\n", curr_pkt.acknum);
+          //printf("Expected Ack : %d\n", in_transit[send_base]->seqnum);
+          //printf("Timer at top : %d\n", timer_order.front());
           stoptimer(0);
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
@@ -106,16 +106,16 @@ void A_input(struct pkt packet)
           if(in_transit[send_base] != NULL) {
             starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
           }
-          printf("Next awaiting seq num : %d\n", send_base);
+          //printf("Next awaiting seq num : %d\n", send_base);
           if(in_transit[send_base] == NULL) {
-            printf("Nothing is waiting!\n");
+            //printf("Nothing is waiting!\n");
           } else {
-            printf("Packet is waiting with seq num : %d\n", in_transit[send_base]->seqnum);
+            //printf("Packet is waiting with seq num : %d\n", in_transit[send_base]->seqnum);
           }
           if(ack_buffer[send_base] == NULL) {
-            printf("Nothing here!\n");
+            //printf("Nothing here!\n");
           } else {
-            printf("Next packet that is bufferd with seq num : %d\n", ack_buffer[send_base]->seqnum);
+            //printf("Next packet that is bufferd with seq num : %d\n", ack_buffer[send_base]->seqnum);
           }
           if(!acked_before) {
             if(timer_order.front() != curr_pkt.acknum) {
@@ -124,7 +124,7 @@ void A_input(struct pkt packet)
               timer_order.pop();
               while(timer_order.front() != timer_order_front) {
                 if(timer_order.front() == curr_pkt.acknum) {
-                  printf("Removed %d from top of timer order\n", timer_order.front());
+                  //printf("Removed %d from top of timer order\n", timer_order.front());
                   timer_order.pop();
                 } else {
                   timer_order.push(timer_order.front());
@@ -134,7 +134,7 @@ void A_input(struct pkt packet)
             } else {
               timer_order.pop();
               if(timer_order.size() > 0) {
-                printf("Next time out packet is : %d\n", timer_order.front());
+                //printf("Next time out packet is : %d\n", timer_order.front());
               }
             }
           }
@@ -207,12 +207,12 @@ void A_timerinterrupt()
   if(ack_buffer[timed_out_pkt] == NULL) {
     timer_order.pop();
     timer_order.push(timed_out_pkt);
-    printf("here1\n");
+    //printf("here1\n");
     send_time[timed_out_pkt] = get_sim_time();
-    printf("Send Base : %d\n", send_base);
-    printf("Packet that timed out : %d\n", timed_out_pkt);
+    //printf("Send Base : %d\n", send_base);
+    //printf("Packet that timed out : %d\n", timed_out_pkt);
     tolayer3(0, *in_transit[timed_out_pkt]);
-    printf("here3\n");
+    //printf("here3\n");
     starttimer(0, (send_time[timer_order.front()] + TIMEOUT) - get_sim_time());
   } else {
     timer_order.pop();
