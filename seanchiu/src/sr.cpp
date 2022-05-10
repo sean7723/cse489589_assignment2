@@ -103,7 +103,7 @@ void A_input(struct pkt packet)
             acked_before = true;
           }
           send_base = (send_base + 1) % WINDOW_SIZE;
-          if(in_transit[send_base] != NULL) {
+          if(in_transit[send_base] != NULL && !acked_before) {
             starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
           }
           printf("Next awaiting seq num : %d\n", send_base);
