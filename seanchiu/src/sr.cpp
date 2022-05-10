@@ -180,6 +180,7 @@ void A_timerinterrupt()
     timer_order.push(timed_out_pkt);
     printf("here1\n");
     send_time[timed_out_pkt] = get_sim_time();
+    printf("Send Base : %d\n", send_base);
     printf("Packet that timed out : %d\n", timed_out_pkt);
     tolayer3(0, *in_transit[timed_out_pkt]);
     printf("here3\n");
