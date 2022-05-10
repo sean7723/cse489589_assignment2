@@ -88,6 +88,10 @@ void A_input(struct pkt packet)
           stoptimer(0);
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
+          if(ack_buffer[send_base] != NULL) {
+            free(ack_buffer[send_base]);
+            ack_buffer[send_base] = NULL;
+          }
           send_base = (send_base + 1) % WINDOW_SIZE;
           if(in_transit[send_base] != NULL) {
             starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
@@ -120,6 +124,9 @@ void A_input(struct pkt packet)
             timer_order.push(next_seq_num);
             // Increment next_seq_num
             next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+          }
+          if(ack_buffer[send_base] != NULL) {
+            curr_pkt = ack_buffer[send_base];
           }
         }
       } else {
