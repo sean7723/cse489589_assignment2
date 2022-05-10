@@ -158,6 +158,7 @@ void A_input(struct pkt packet)
           if(timer_order.front() != packet.acknum) {
             int timer_order_front = timer_order.front();
             timer_order.push(timer_order_front);
+            timer_order.pop();
             while(timer_order.front() != timer_order_front) {
               if(timer_order.front() == packet.acknum) {
                 timer_order.pop();
