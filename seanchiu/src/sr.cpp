@@ -169,31 +169,42 @@ void A_input(struct pkt packet)
           }
         }
       } else {
-        // Ack not in-order need to buffer
+        // Ack not in-order need to buffer, need to make sure that we are not accepting duplicate acks
         if(ack_buffer[packet.acknum] == NULL) {
-          struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
-          packet_to_buffer->seqnum = packet.seqnum;
-          packet_to_buffer->acknum = packet.acknum;
-          int payload_checksum = 0;
-          for(int i = 0; i < 20; i++) {
-            packet_to_buffer->payload[i] = packet.payload[i];
-          }
-          packet_to_buffer->checksum = packet_to_buffer->seqnum + packet_to_buffer->acknum + payload_checksum;
-          ack_buffer[packet.acknum] = packet_to_buffer;
-          if(timer_order.front() != packet.acknum) {
-            int timer_order_front = timer_order.front();
-            timer_order.push(timer_order_front);
-            timer_order.pop();
-            while(timer_order.front() != timer_order_front) {
-              if(timer_order.front() == packet.acknum) {
+          if(in_transit[packet.acknum] != NULL) {
+            bool correct_payload = true;
+            for(int i = 0; i < 20; i++) {
+              if(in_transit[packet.acknum]->payload[i] != packet.payload[i]) {
+                correct_payload = false;
+                break;
+              }
+            }
+            if(correct_payload) {
+              struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
+              packet_to_buffer->seqnum = packet.seqnum;
+              packet_to_buffer->acknum = packet.acknum;
+              int payload_checksum = 0;
+              for(int i = 0; i < 20; i++) {
+                packet_to_buffer->payload[i] = packet.payload[i];
+              }
+              packet_to_buffer->checksum = packet_to_buffer->seqnum + packet_to_buffer->acknum + payload_checksum;
+              ack_buffer[packet.acknum] = packet_to_buffer;
+              if(timer_order.front() != packet.acknum) {
+                int timer_order_front = timer_order.front();
+                timer_order.push(timer_order_front);
                 timer_order.pop();
+                while(timer_order.front() != timer_order_front) {
+                  if(timer_order.front() == packet.acknum) {
+                    timer_order.pop();
+                  } else {
+                    timer_order.push(timer_order.front());
+                    timer_order.pop();
+                  }
+                }
               } else {
-                timer_order.push(timer_order.front());
                 timer_order.pop();
               }
             }
-          } else {
-            timer_order.pop();
           }
         }
       }
