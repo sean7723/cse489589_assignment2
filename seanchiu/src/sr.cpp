@@ -178,8 +178,11 @@ void A_timerinterrupt()
   if(ack_buffer[timed_out_pkt] == NULL) {
     timer_order.pop();
     timer_order.push(timed_out_pkt);
+    printf("here1\n");
     send_time[timed_out_pkt] = get_sim_time();
+    printf("here2\n");
     tolayer3(0, *in_transit[timed_out_pkt]);
+    printf("here3\n");
     starttimer(0, (send_time[timer_order.front()] + TIMEOUT) - get_sim_time());
   } else {
     timer_order.pop();
