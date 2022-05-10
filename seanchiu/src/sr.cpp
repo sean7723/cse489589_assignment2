@@ -87,6 +87,7 @@ void A_input(struct pkt packet)
         while(in_transit[send_base] != NULL && curr_pkt.acknum == in_transit[send_base]->seqnum) {
           printf("Received Ack : %d\n", curr_pkt.acknum);
           printf("Expected Ack : %d\n", in_transit[send_base]->seqnum);
+          printf("Timer at top : %d\n", timer_order.front());
           stoptimer(0);
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
