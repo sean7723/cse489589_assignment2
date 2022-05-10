@@ -181,6 +181,7 @@ void A_input(struct pkt packet)
             }
             if(correct_payload) {
               printf("Buffering packet with seq num : %d\n", packet.acknum);
+              printf("Buffering packet with payload : %s\n", packet.payload);
               struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
               packet_to_buffer->seqnum = packet.seqnum;
               packet_to_buffer->acknum = packet.acknum;
