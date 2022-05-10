@@ -51,7 +51,7 @@ void A_output(struct msg message)
     // store packet in case need to resent, andthen send packet
     in_transit[next_seq_num] = to_send;
     tolayer3(0, *to_send);
-    // start timer for new packet IF it is the oldest packet or base backet
+    // start timer for new packet IF it is the oldest packet or base packet
     if(send_base == next_seq_num) {
       starttimer(0, TIMEOUT);
     }
