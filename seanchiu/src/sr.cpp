@@ -150,7 +150,17 @@ void A_input(struct pkt packet)
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
-
+  // When timer goes off, resend packet then add to back of queue and move onto next timer
+  int timed_out_pkt = timer_order.front();
+  if(ack_buffer[timed_out_pkt] == NULL) {
+    timer_order.pop();
+    timer_order.push(timed_out_pkt);
+    send_time[timed_out_pkt] = get_sim_time();
+    starttimer(0, (send_time[timer_order.front()] + TIMEOUT) - get_sim_time());
+  } else {
+    timer_order.pop();
+    starttimer(0, (send_time[timer_order.front()] + TIMEOUT) - get_sim_time());
+  }
 }
 
 /* the following routine will be called once (only) before any other */
