@@ -161,6 +161,9 @@ void A_input(struct pkt packet)
             curr_pkt = *ack_buffer[send_base];
           }
         }
+        if(in_transit[send_base] != NULL) {
+          starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
+        }
       } else {
         // Ack not in-order need to buffer
         if(ack_buffer[packet.acknum] == NULL) {
