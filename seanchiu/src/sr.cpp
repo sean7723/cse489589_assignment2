@@ -31,7 +31,7 @@ std::queue<msg> buffer;
 // B variables
 int rcv_base;
 int* duplicates;
-std::queue<struct pkt**> received_buffer;
+struct pkt** received_buffer;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
@@ -108,28 +108,44 @@ void B_input(struct pkt packet)
   if(checksum == packet.checksum) {
     // Checksum OK proceed
     // Check to make sure we are not receiving duplicates
-    if(duplicates[packet.seqnum] != packet.checksum) {
+    if(duplicates[packet.seqnum] != packet.checksum && received_buffer[packet.seqnum] == NULL) {
       // Check to make sure that seqnum is in-order
       if(packet.seqnum == rcv_base) {
         // In-order so deliver and deliver next in-order packets
         // Deliver just received packet
         tolayer5(1, packet.payload);
         duplicates[packet.seqnum] = packet.checksum;
-        struct pkt ack;
-        ack.seqnum = packet.seqnum;
-        ack.acknum = rcv_base;
-        int payload_checksum = 0;
-        for(int i = 0; i < 20; i++) {
-          ack.payload[i] = packet.payload[i];
-          payload_checksum += packet.payload[i];
-        }
-        ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
-        tolayer3(1, ack);
+        rcv_base = (rcv_base + 1) % WINDOW_SIZE;
         // Deliver the buffered packets
-        
+        while(received_buffer[rcv_base] != NULL) {
+          // Next packet is already buffered, deliver
+          struct pkt next = *received_buffer[rcv_base];
+          tolayer5(1, next.payload);
+          duplicates[next.seqnum] = next.checksum;
+          free(received_buffer[rcv_base]);
+          received_buffer[rcv_base] = NULL;
+          rcv_base = (rcv_base + 1) % WINDOW_SIZE;
+        }
       } else {
         // Not in order, buffer for later
+        struct pkt* buffer_for_later = (struct pkt*)malloc(sizeof(struct pkt));
+        buffer_for_later->seqnum = packet.seqnum;
+        buffer_for_later->acknum = packet.acknum;
+        buffer_for_later->payload = packet.payload;
+        buffer_for_later->checksum = packet.checksum;
+        received_buffer[buffer_for_later->seqnum] = buffer_for_later;
       }
+      // We always ack with packet seq num when received
+      struct pkt ack;
+      ack.seqnum = packet.seqnum;
+      ack.acknum = packet.seqnum;
+      int payload_checksum = 0;
+      for(int i = 0; i < 20; i++) {
+        ack.payload[i] = packet.payload[i];
+        payload_checksum += packet.payload[i];
+      }
+      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+      tolayer3(1, ack);
     }
   }
 }
@@ -142,5 +158,9 @@ void B_init()
   duplicates = new int[WINDOW_SIZE];
   for(int i = 0; i < WINDOW_SIZE; i++) {
     duplicates[i] = 0;
+  }
+  received_buffer = new struct pkt*[WINDOW_SIZE];
+  for(int i = 0; i < WINDOW_SIZE; i++) {
+    received_buffer[i] = NULL;
   }
 }
