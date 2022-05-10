@@ -37,6 +37,7 @@ struct pkt** received_buffer;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
+  printf("Received Message %s\n", message.data);
   if(in_transit[next_seq_num] != NULL) {
     // No space in window
     buffer.push(message);
