@@ -70,10 +70,10 @@ void A_output(struct msg message)
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
-  for(int i = 0; i < queue.size(); i++) {
-    printf("Timer order at position %d is : %d\n", i, queue.front());
-    queue.push(queue.front());
-    queue.pop();
+  for(int i = 0; i < timer_order.size(); i++) {
+    printf("Timer order at position %d is : %d\n", i, timer_order.front());
+    timer_order.push(timer_order.front());
+    timer_order.pop();
   }
   // Calculate Checksum
   int packet_payload_checksum = 0;
