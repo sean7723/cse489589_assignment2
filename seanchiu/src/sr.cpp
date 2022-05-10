@@ -324,7 +324,33 @@ void B_input(struct pkt packet)
         ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
         tolayer3(1, ack);
       }
-      
+      if(received_buffer[packet.seqnum] != NULL) {
+        bool same_packet = true;
+        for(int i = 0; i < 20; i++) {
+          if(packet.payload[i] != received_buffer[packet.seqnum]->payload[i]) {
+            same_packet = false;
+            break;
+          }
+        }
+        if(packet.seqnum != received_buffer[packet.seqnum]->seqnum) {
+          same_packet = false;
+        }
+        if(packet.acknum != received_buffer[packet.seqnum]->acknum) {
+          same_packet = false;
+        }
+        if(same_packet) {
+          struct pkt ack;
+          ack.seqnum = packet.seqnum;
+          ack.acknum = packet.seqnum;
+          int payload_checksum = 0;
+          for(int i = 0; i < 20; i++) {
+            ack.payload[i] = packet.payload[i];
+            payload_checksum += packet.payload[i];
+          }
+          ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+          tolayer3(1, ack);
+        }
+      }
     }
   }
 }
