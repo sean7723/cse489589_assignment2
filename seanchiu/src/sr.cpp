@@ -67,7 +67,54 @@ void A_output(struct msg message)
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
-
+  // Calculate Checksum
+  int packet_payload_checksum = 0;
+  for(int i = 0; i < 20; i++) {
+    packet_payload_checksum += (int)packet.payload[i];
+  }
+  int checksum = packet.seqnum + packet.acknum + packet_payload_checksum;
+  // Make sure checksum is correct
+  if(checksum == packet.checksum) {
+    // Checksum is OK continue
+    // If there is a packet we are waiting for
+    if(in_transit[packet.acknum] != NULL) {
+      if(packet.acknum == in_transit[send_base]->seqnum) {
+        // Ack in-order
+        stoptimer(0);
+        free(in_transit[send_base]);
+        in_transit[send_base] = NULL;
+        send_base = (send_base + 1) % WINDOW_SIZE;
+        if(in_transit[send_base] != NULL) {
+          starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
+        }
+        if(buffer.size() > 0) {
+          // Still messages in buffer that needs to be sent
+          struct msg next_msg = buffer.front();
+          struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
+          next_packet->seqnum = next_seq_num;
+          next_packet->acknum = 0;
+          int payload_checksum = 0;
+          for(int i = 0; i < 20; i++) {
+            next_packet->payload[i] = next_msg.data[i];
+            payload_checksum += next_msg.data[i];
+          }
+          next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
+          in_transit[next_seq_num] = next_packet;
+          tolayer3(0, *next_packet);
+          // Start timer for new packet IF it is the oldest packet or base packet
+          if(send_base == next_seq_num) {
+            starttimer(0, TIMEOUT);
+          }
+          // Need to keep track of time for when we have to interrupt next
+          send_time[next_seq_num] = get_sim_time();
+          // Increment next_seq_num
+          next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+        }
+      } else {
+        // Ack not in-order need to buffer
+      }
+    }
+  }
 }
 
 /* called when A's timer goes off */
@@ -137,7 +184,7 @@ void B_input(struct pkt packet)
         buffer_for_later->checksum = packet.checksum;
         received_buffer[buffer_for_later->seqnum] = buffer_for_later;
       }
-      // We always ack with packet seq num when received
+      // We always ack with packet seq num when received valid
       struct pkt ack;
       ack.seqnum = packet.seqnum;
       ack.acknum = packet.seqnum;
@@ -149,16 +196,18 @@ void B_input(struct pkt packet)
       ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
       tolayer3(1, ack);
     } else {
-      struct pkt ack;
-      ack.seqnum = packet.seqnum;
-      ack.acknum = packet.seqnum;
-      int payload_checksum = 0;
-      for(int i = 0; i < 20; i++) {
-        ack.payload[i] = packet.payload[i];
-        payload_checksum += packet.payload[i];
+      if(duplicates[packet.seqnum] == packet.checksum) {
+        struct pkt ack;
+        ack.seqnum = packet.seqnum;
+        ack.acknum = packet.seqnum;
+        int payload_checksum = 0;
+        for(int i = 0; i < 20; i++) {
+          ack.payload[i] = packet.payload[i];
+          payload_checksum += packet.payload[i];
+        }
+        ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+        tolayer3(1, ack);
       }
-      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
-      tolayer3(1, ack);
     }
   }
 }
