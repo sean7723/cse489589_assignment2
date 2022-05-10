@@ -312,7 +312,9 @@ void B_input(struct pkt packet)
       ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
       tolayer3(1, ack);
     } else {
+      // Maybe sending too many acks? We only want to send ack if it is in the window N-1 to N + 1
       if(duplicates[packet.seqnum] == packet.checksum) {
+        printf("Sent once\n");
         struct pkt ack;
         ack.seqnum = packet.seqnum;
         ack.acknum = packet.seqnum;
@@ -325,6 +327,7 @@ void B_input(struct pkt packet)
         tolayer3(1, ack);
       }
       if(received_buffer[packet.seqnum] != NULL) {
+        printf("sent twice\n");
         bool same_packet = true;
         for(int i = 0; i < 20; i++) {
           if(packet.payload[i] != received_buffer[packet.seqnum]->payload[i]) {
