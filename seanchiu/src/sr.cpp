@@ -85,8 +85,8 @@ void A_input(struct pkt packet)
         // Next ack received, move window and keep on doing for in-order packets
         struct pkt curr_pkt = packet;
         while(in_transit[send_base] != NULL && curr_pkt.acknum == in_transit[send_base]->seqnum) {
-          printf("Received Ack : %d", curr_pkt.acknum);
-          printf("Expected Ack : %d", in_transit[send_base]);
+          printf("Received Ack : %d\n", curr_pkt.acknum);
+          printf("Expected Ack : %d\n", in_transit[send_base]);
           stoptimer(0);
           free(in_transit[send_base]);
           in_transit[send_base] = NULL;
