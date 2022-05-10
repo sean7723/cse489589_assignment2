@@ -156,7 +156,7 @@ void A_timerinterrupt()
     timer_order.pop();
     timer_order.push(timed_out_pkt);
     send_time[timed_out_pkt] = get_sim_time();
-    tolayer3(0, in_transit[timed_out_pkt]);
+    tolayer3(0, *in_transit[timed_out_pkt]);
     starttimer(0, (send_time[timer_order.front()] + TIMEOUT) - get_sim_time());
   } else {
     timer_order.pop();
