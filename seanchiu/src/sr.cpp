@@ -98,11 +98,11 @@ void A_input(struct pkt packet)
           if(in_transit[send_base] != NULL) {
             starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
           }
-          if(timer_order.front() != packet.acknum) {
+          if(timer_order.front() != curr_pkt.acknum) {
             int timer_order_front = timer_order.front();
             timer_order.push(timer_order_front);
             while(timer_order.front() != timer_order_front) {
-              if(timer_order.front() == packet.acknum) {
+              if(timer_order.front() == curr_pkt.acknum) {
                 timer_order.pop();
               } else {
                 timer_order.push(timer_order.front());
