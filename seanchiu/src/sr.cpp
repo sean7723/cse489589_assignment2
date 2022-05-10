@@ -150,6 +150,20 @@ void A_input(struct pkt packet)
           }
           packet_to_buffer->checksum = packet_to_buffer->seqnum + packet_to_buffer->acknum + payload_checksum;
           ack_buffer[packet.acknum] = packet_to_buffer;
+          if(timer_order.front() != packet.acknum) {
+            int timer_order_front = timer_order.front();
+            timer_order.push(timer_order_front);
+            while(timer_order.front() != timer_order_front) {
+              if(timer_order.front() == packet.acknum) {
+                timer_order.pop();
+              } else {
+                timer_order.push(timer_order.front());
+                timer_order.pop();
+              }
+            }
+          } else {
+            timer_order.pop();
+          }
         }
       }
     }
