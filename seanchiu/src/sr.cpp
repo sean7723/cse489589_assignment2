@@ -29,6 +29,7 @@ struct pkt** in_transit;
 float* send_time;
 std::queue<msg> buffer;
 std::queue<int> timer_order;
+struct pkt** ack_buffer;
 // B variables
 int rcv_base;
 int* duplicates;
@@ -81,45 +82,59 @@ void A_input(struct pkt packet)
     // If there is a packet we are waiting for
     if(in_transit[packet.acknum] != NULL) {
       if(packet.acknum == in_transit[send_base]->seqnum) {
-        // Ack in-order
-        stoptimer(0);
-        free(in_transit[send_base]);
-        in_transit[send_base] = NULL;
-        send_base = (send_base + 1) % WINDOW_SIZE;
-        if(in_transit[send_base] != NULL) {
-          starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
-        }
-        if(timer_order.front() != packet.acknum) {
-          printf("NOT IN THE RIGHT ORDER IDIOT \n");
-        } else {
-          timer_order.pop();
-        }
-        if(buffer.size() > 0) {
-          // Still messages in buffer that needs to be sent
-          struct msg next_msg = buffer.front();
-          struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
-          next_packet->seqnum = next_seq_num;
-          next_packet->acknum = 0;
-          int payload_checksum = 0;
-          for(int i = 0; i < 20; i++) {
-            next_packet->payload[i] = next_msg.data[i];
-            payload_checksum += next_msg.data[i];
+        // Next ack received, move window and keep on doing for in-order packets
+        struct pkt curr_pkt = packet;
+        while(in_transit[send_base] != NULL && curr_pkt.acknum == in_transit[send_base]->seqnum) {
+          stoptimer(0);
+          free(in_transit[send_base]);
+          in_transit[send_base] = NULL;
+          send_base = (send_base + 1) % WINDOW_SIZE;
+          if(in_transit[send_base] != NULL) {
+            starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
           }
-          next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
-          in_transit[next_seq_num] = next_packet;
-          tolayer3(0, *next_packet);
-          // Start timer for new packet IF it is the oldest packet or base packet
-          if(send_base == next_seq_num) {
-            starttimer(0, TIMEOUT);
+          if(timer_order.front() != packet.acknum) {
+            printf("NOT IN THE RIGHT ORDER IDIOT \n");
+          } else {
+            timer_order.pop();
           }
-          // Need to keep track of time for when we have to interrupt next
-          send_time[next_seq_num] = get_sim_time();
-          timer_order.push(next_seq_num);
-          // Increment next_seq_num
-          next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+          if(buffer.size() > 0) {
+            // Still messages in buffer that needs to be sent
+            struct msg next_msg = buffer.front();
+            struct pkt* next_packet = (struct pkt*) malloc(sizeof(struct pkt));
+            next_packet->seqnum = next_seq_num;
+            next_packet->acknum = 0;
+            int payload_checksum = 0;
+            for(int i = 0; i < 20; i++) {
+              next_packet->payload[i] = next_msg.data[i];
+              payload_checksum += next_msg.data[i];
+            }
+            next_packet->checksum = next_packet->seqnum + next_packet->acknum + payload_checksum;
+            in_transit[next_seq_num] = next_packet;
+            tolayer3(0, *next_packet);
+            // Start timer for new packet IF it is the oldest packet or base packet
+            if(send_base == next_seq_num) {
+              starttimer(0, TIMEOUT);
+            }
+            // Need to keep track of time for when we have to interrupt next
+            send_time[next_seq_num] = get_sim_time();
+            timer_order.push(next_seq_num);
+            // Increment next_seq_num
+            next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
+          }
         }
       } else {
         // Ack not in-order need to buffer
+        if(ack_buffer[packet.acknum] == NULL) {
+          struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
+          packet_to_buffer->seqnum = next_seq_num;
+          packet_to_buffer->acknum = 0;
+          int payload_checksum = 0;
+          for(int i = 0; i < 20; i++) {
+            packet_to_buffer->payload[i] = packet.payload[i];
+          }
+          packet_to_buffer->checksum = packet_to_buffer->seqnum + packet_to_buffer->acknum + payload_checksum;
+          ack_buffer[packet.acknum] = packet_to_buffer;
+        }
       }
     }
   }
@@ -141,6 +156,10 @@ void A_init()
   in_transit = new struct pkt*[WINDOW_SIZE];
   for(int i = 0; i < WINDOW_SIZE; i++) {
     in_transit[i] = NULL;
+  }
+  ack_buffer = new struct pkt*[WINDOW_SIZE];
+  for(int i = 0; i < WINDOW_SIZE; i++) {
+    ack_buffer[i] = NULL;
   }
   send_time = new float[WINDOW_SIZE];
   for(int i = 0; i < WINDOW_SIZE; i++) {
