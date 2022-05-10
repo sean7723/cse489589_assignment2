@@ -170,8 +170,8 @@ void A_input(struct pkt packet)
         // Ack not in-order need to buffer
         if(ack_buffer[packet.acknum] == NULL) {
           struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
-          packet_to_buffer->seqnum = next_seq_num;
-          packet_to_buffer->acknum = 0;
+          packet_to_buffer->seqnum = packet.seqnum;
+          packet_to_buffer->acknum = packet.acknum;
           int payload_checksum = 0;
           for(int i = 0; i < 20; i++) {
             packet_to_buffer->payload[i] = packet.payload[i];
