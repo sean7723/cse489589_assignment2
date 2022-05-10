@@ -28,6 +28,7 @@ int next_seq_num;
 struct pkt** in_transit;
 float* send_time;
 std::queue<msg> buffer;
+std::queue<int> timer_order;
 // B variables
 int rcv_base;
 int* duplicates;
@@ -59,6 +60,7 @@ void A_output(struct msg message)
     }
     // Need to keep track of time for when we have to interrupt next
     send_time[next_seq_num] = get_sim_time();
+    timer_order.push(next_seq_num);
     // Increment next_seq_num
     next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
   }
@@ -87,6 +89,11 @@ void A_input(struct pkt packet)
         if(in_transit[send_base] != NULL) {
           starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
         }
+        if(timer_order.front() != packet.acknum) {
+          printf("NOT IN THE RIGHT ORDER IDIOT \N");
+        } else {
+          timer_order.pop();
+        }
         if(buffer.size() > 0) {
           // Still messages in buffer that needs to be sent
           struct msg next_msg = buffer.front();
@@ -107,6 +114,7 @@ void A_input(struct pkt packet)
           }
           // Need to keep track of time for when we have to interrupt next
           send_time[next_seq_num] = get_sim_time();
+          timer_order.push(next_seq_num);
           // Increment next_seq_num
           next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
         }
