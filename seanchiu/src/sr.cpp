@@ -102,6 +102,7 @@ void A_input(struct pkt packet)
           if(timer_order.front() != curr_pkt.acknum) {
             int timer_order_front = timer_order.front();
             timer_order.push(timer_order_front);
+            timer_order.pop();
             while(timer_order.front() != timer_order_front) {
               if(timer_order.front() == curr_pkt.acknum) {
                 printf("Removed %d from top of timer order\n", timer_order.front());
