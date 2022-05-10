@@ -40,7 +40,7 @@ void A_output(struct msg message)
     buffer.push(message);
   } else {
     // Space to send packet
-    int payload = checksum = 0;
+    int payload_checksum = 0;
     struct pkt* to_send = (struct pkt*)malloc(sizeof(struct pkt));
     to_send->seqnum = next_seq_num;
     to_send->acknum = 0;
@@ -131,7 +131,9 @@ void B_input(struct pkt packet)
         struct pkt* buffer_for_later = (struct pkt*)malloc(sizeof(struct pkt));
         buffer_for_later->seqnum = packet.seqnum;
         buffer_for_later->acknum = packet.acknum;
-        buffer_for_later->payload = packet.payload;
+        for(int i = 0; i < 20; i++) {
+            buffer_for_later->payload[i] = packet.payload[i];
+        }
         buffer_for_later->checksum = packet.checksum;
         received_buffer[buffer_for_later->seqnum] = buffer_for_later;
       }
