@@ -161,6 +161,7 @@ void A_input(struct pkt packet)
             send_time[next_seq_num] = get_sim_time();
             timer_order.push(next_seq_num);
             // Increment next_seq_num
+            buffer.pop();
             next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
           }
           if(ack_buffer[send_base] != NULL) {
