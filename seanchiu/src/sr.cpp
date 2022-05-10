@@ -88,6 +88,16 @@ void A_input(struct pkt packet)
     // If there is a packet we are waiting for
     if(in_transit[packet.acknum] != NULL) {
       if(packet.acknum == in_transit[send_base]->seqnum) {
+        bool correct_payload = true;
+        for(int i = 0; i < 20; i++) {
+          if(in_transit[packet.acknum]->payload[i] != packet.payload[i]) {
+            correct_payload = false;
+            break;
+          }
+        }
+        if(!correct_payload) {
+          return;
+        }
         // Next ack received, move window and keep on doing for in-order packets
         struct pkt curr_pkt = packet;
         while(in_transit[send_base] != NULL && curr_pkt.acknum == in_transit[send_base]->seqnum) {
@@ -314,7 +324,6 @@ void B_input(struct pkt packet)
     } else {
       // Maybe sending too many acks? We only want to send ack if it is in the window N-1 to N + 1
       if(duplicates[packet.seqnum] == packet.checksum) {
-        printf("Sent once\n");
         struct pkt ack;
         ack.seqnum = packet.seqnum;
         ack.acknum = packet.seqnum;
@@ -327,7 +336,6 @@ void B_input(struct pkt packet)
         tolayer3(1, ack);
       }
       if(received_buffer[packet.seqnum] != NULL) {
-        printf("sent twice\n");
         bool same_packet = true;
         for(int i = 0; i < 20; i++) {
           if(packet.payload[i] != received_buffer[packet.seqnum]->payload[i]) {
@@ -349,7 +357,6 @@ void B_input(struct pkt packet)
         }
       }
     }
-    printf("END-----------------\n");
   }
 }
 
