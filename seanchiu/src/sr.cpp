@@ -106,6 +106,12 @@ void A_input(struct pkt packet)
           if(in_transit[send_base] != NULL) {
             starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
           }
+          printf("Next awaiting seq num : %d\n", send_base);
+          if(in_transit[send_base] == NULL) {
+            printf("Nothing is waiting!\n");
+          } else {
+            printf("Packet is waiting with seq num : %d\n", in_transit[send_base]->seqnum);
+          }
           if(!acked_before) {
             if(timer_order.front() != curr_pkt.acknum) {
               int timer_order_front = timer_order.front();
