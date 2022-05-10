@@ -112,6 +112,11 @@ void A_input(struct pkt packet)
           } else {
             printf("Packet is waiting with seq num : %d\n", in_transit[send_base]->seqnum);
           }
+          if(ack_buffer[send_base] == NULL) {
+            printf("Nothing here!\n");
+          } else {
+            printf("Next packet that is bufferd with seq num : %d\n", ack_buffer[send_base]->seqnum);
+          }
           if(!acked_before) {
             if(timer_order.front() != curr_pkt.acknum) {
               int timer_order_front = timer_order.front();
@@ -199,7 +204,7 @@ void A_timerinterrupt()
 {
   // When timer goes off, resend packet then add to back of queue and move onto next timer
   int timed_out_pkt = timer_order.front();
-  if(ack_buffer[timed_out_pkt] == NULL && timer_order.size() > 0) {
+  if(ack_buffer[timed_out_pkt] == NULL) {
     timer_order.pop();
     timer_order.push(timed_out_pkt);
     printf("here1\n");
