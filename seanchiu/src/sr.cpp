@@ -103,7 +103,7 @@ void A_input(struct pkt packet)
             acked_before = true;
           }
           send_base = (send_base + 1) % WINDOW_SIZE;
-          if(in_transit[send_base] != NULL && !acked_before) {
+          if(in_transit[send_base] != NULL) {
             starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
           }
           printf("Next awaiting seq num : %d\n", send_base);
@@ -199,7 +199,7 @@ void A_timerinterrupt()
 {
   // When timer goes off, resend packet then add to back of queue and move onto next timer
   int timed_out_pkt = timer_order.front();
-  if(ack_buffer[timed_out_pkt] == NULL) {
+  if(ack_buffer[timed_out_pkt] == NULL && timer_order.size() > 0) {
     timer_order.pop();
     timer_order.push(timed_out_pkt);
     printf("here1\n");
