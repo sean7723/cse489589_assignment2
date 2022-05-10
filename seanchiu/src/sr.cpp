@@ -37,7 +37,7 @@ struct pkt** received_buffer;
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
-  printf("Received Message %s\n", message.data);
+  //printf("Received Message %s\n", message.data);
   if(in_transit[next_seq_num] != NULL) {
     // No space in window
     buffer.push(message);
@@ -190,8 +190,8 @@ void A_input(struct pkt packet)
               }
             }
             if(correct_payload) {
-              printf("Buffering packet with seq num : %d\n", packet.acknum);
-              printf("Buffering packet with payload : %s\n", packet.payload);
+              //printf("Buffering packet with seq num : %d\n", packet.acknum);
+              //printf("Buffering packet with payload : %s\n", packet.payload);
               struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
               packet_to_buffer->seqnum = packet.seqnum;
               packet_to_buffer->acknum = packet.acknum;
