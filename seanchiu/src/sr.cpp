@@ -97,7 +97,16 @@ void A_input(struct pkt packet)
             starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
           }
           if(timer_order.front() != packet.acknum) {
-            printf("NOT IN THE RIGHT ORDER IDIOT \n");
+            int timer_order_front = timer_order.front();
+            timer_order.push(timer_order_front);
+            while(timer_order.front() != timer_order_front) {
+              if(timer_order.front() == packet.acknum) {
+                timer_order.pop();
+              } else {
+                timer_order.push(timer_order.front());
+                timer_order.pop();
+              }
+            }
           } else {
             timer_order.pop();
           }
@@ -132,11 +141,6 @@ void A_input(struct pkt packet)
       } else {
         // Ack not in-order need to buffer
         if(ack_buffer[packet.acknum] == NULL) {
-          if(timer_order.front() != packet.acknum) {
-            printf("NOT IN THE RIGHT ORDER IDIOT \n");
-          } else {
-            timer_order.pop();
-          }
           struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
           packet_to_buffer->seqnum = next_seq_num;
           packet_to_buffer->acknum = 0;
