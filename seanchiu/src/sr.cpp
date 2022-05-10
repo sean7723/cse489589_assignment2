@@ -162,6 +162,7 @@ void A_input(struct pkt packet)
               }
             }
           } else {
+            printf("Unreachable code!\n");
             timer_order.pop();
           }
         }
