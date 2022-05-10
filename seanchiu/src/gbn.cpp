@@ -22,7 +22,7 @@
 // Shared Variable
 int WINDOW_SIZE;
 // A variables
-float TIMEOUT = 20.0;
+float TIMEOUT = 30.0;
 int send_base;
 int next_seq_num;
 struct pkt** in_transit;
