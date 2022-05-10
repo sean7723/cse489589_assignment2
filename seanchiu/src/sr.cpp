@@ -182,7 +182,7 @@ void A_input(struct pkt packet)
             if(packet.seqnum != in_transit[packet.acknum]->seqnum) {
               correct_packet = false;
             }
-            if(correct_payload) {
+            if(correct_packet) {
               struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
               packet_to_buffer->seqnum = packet.seqnum;
               packet_to_buffer->acknum = packet.acknum;
