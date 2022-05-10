@@ -116,7 +116,7 @@ void A_input(struct pkt packet)
           if(ack_buffer[send_base] == NULL) {
             //printf("Nothing here!\n");
           } else {
-            printf("Next packet that is bufferd with seq num : %d\n", ack_buffer[send_base]->seqnum);
+            //printf("Next packet that is bufferd with seq num : %d\n", ack_buffer[send_base]->seqnum);
           }
           if(!acked_before) {
             if(timer_order.front() != curr_pkt.acknum) {
@@ -180,6 +180,7 @@ void A_input(struct pkt packet)
               }
             }
             if(correct_payload) {
+              printf("Buffering packet with seq num : %d\n", packet.acknum);
               struct pkt* packet_to_buffer = (struct pkt*) malloc(sizeof(struct pkt));
               packet_to_buffer->seqnum = packet.seqnum;
               packet_to_buffer->acknum = packet.acknum;
