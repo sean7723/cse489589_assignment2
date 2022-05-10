@@ -103,9 +103,6 @@ void A_input(struct pkt packet)
             acked_before = true;
           }
           send_base = (send_base + 1) % WINDOW_SIZE;
-          if(in_transit[send_base] != NULL) {
-            starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
-          }
           printf("Next awaiting seq num : %d\n", send_base);
           if(in_transit[send_base] == NULL) {
             printf("Nothing is waiting!\n");
@@ -160,6 +157,9 @@ void A_input(struct pkt packet)
           if(ack_buffer[send_base] != NULL) {
             curr_pkt = *ack_buffer[send_base];
           }
+        }
+        if(in_transit[send_base] != NULL) {
+          starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
         }
       } else {
         // Ack not in-order need to buffer
