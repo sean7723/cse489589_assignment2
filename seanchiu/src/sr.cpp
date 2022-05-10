@@ -126,7 +126,7 @@ void A_input(struct pkt packet)
             next_seq_num = (next_seq_num + 1) % WINDOW_SIZE;
           }
           if(ack_buffer[send_base] != NULL) {
-            curr_pkt = ack_buffer[send_base];
+            curr_pkt = *ack_buffer[send_base];
           }
         }
       } else {
