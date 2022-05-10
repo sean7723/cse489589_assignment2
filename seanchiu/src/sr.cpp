@@ -90,7 +90,7 @@ void A_input(struct pkt packet)
           starttimer(0, (send_time[send_base] + TIMEOUT) - get_sim_time());
         }
         if(timer_order.front() != packet.acknum) {
-          printf("NOT IN THE RIGHT ORDER IDIOT \N");
+          printf("NOT IN THE RIGHT ORDER IDIOT \n");
         } else {
           timer_order.pop();
         }
