@@ -148,6 +148,17 @@ void B_input(struct pkt packet)
       }
       ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
       tolayer3(1, ack);
+    } else {
+      struct pkt ack;
+      ack.seqnum = packet.seqnum;
+      ack.acknum = packet.seqnum;
+      int payload_checksum = 0;
+      for(int i = 0; i < 20; i++) {
+        ack.payload[i] = packet.payload[i];
+        payload_checksum += packet.payload[i];
+      }
+      ack.checksum = ack.seqnum + ack.acknum + payload_checksum;
+      tolayer3(1, ack);
     }
   }
 }
