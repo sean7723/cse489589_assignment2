@@ -1,0 +1,5 @@
+Run,Messages,Loss,Corruption,Time_bw_messages,Application_A,Transport_A,Transport_B,Application_B,Total_time,Throughput
+1,1000,0.5,0.2,50.0,1000,90197,8836,170,49908.242188,0.003406
+Run,Messages,Loss,Corruption,Time_bw_messages,Application_A,Transport_A,Transport_B,Application_B,Total_time,Throughput
+1,1000,0.5,0.2,50.0,1000,134663,8955,137,50491.140625,0.002713
+2,1000,0.5,0.2,50.0,1000,111339,8514,135,48823.390625,0.002765
